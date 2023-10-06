@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% block title %}Auction{% endblock title %}
+{% block content %}
+<section class="flex flex-wrap gap-8 mb-4 mt-10">
+  <a href={% url "auctions:create" %}>Create</a>
+  {% for auction in auctions %}
+  <!-- Auction Component -->
+  <article class="max-w-[360px] bg-white shadow-lg rounded-xl p-6">
+    <div class="flex flex-col">
+      <div class="">
+        <div class="relative h-62 w-full mb-3">
+          <div class="absolute flex flex-col top-0 right-0">
+            <button
+              class="transition ease-in duration-300 hover:text-red-500 text-gray-500 rounded-full w-8 h-8 text-center p-1"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                />
+              </svg>
+            </button>
+          </div class="h-[200px] w-[200px]">
+          <img src={{auction.image.url}} alt="auction image"
+          class="h-[200px] w-[200px] object-contain rounded-2xl" />
+        </div>
+        <div class="flex-auto justify-evenly">
+          <div class="flex flex-wrap">
+            {% if auction.is_active %}
+            <div
+              class="bg-green-400 text-white text-xs px-2 py-1 rounded-lg mb-2"
+            >
+              OPEN
+            </div>
+            {% else %}
+            <div
+              class="bg-red-400 text-white text-xs px-2 py-1 rounded-lg mb-2"
+            >
+              CLOSED
+            </div>
+            {% endif %}
+            <div class="w-full min-w-0">
+              <h2
+                class="text-lg mr-auto cursor-pointer text-black hover:text-purple-500 truncate"
+              >
+                {{ auction.title }}
+              </h2>
+            </div>
+            <div class="text-sm text-gray-400">
+              Current high bid by
+              <span class="text-black text-sm cursor-pointer"
+                >@{{ auction.owner }}</span
+              >
+            </div>
+          </div>
+          <div class="text-xl text-black font-semibold mt-1">
+            ${{ auction.current_price }}
+          </div>
+          <hr class="rounded mt-3 mb-3" />
+          <div class="text-md text-black mb-2">Auction ends in</div>
+          <div class="flex space-x-2 text-sm font-medium justify-between">
+            <button
+              class="transition ease-in duration-300 inline-flex items-center text-sm font-medium mb-2 md:mb-0 bg-purple-500 px-5 py-2 hover:shadow-lg tracking-wider text-white rounded-full hover:bg-purple-600"
+            >
+              <span>{{ auction.start_date }}</span>
+            </button>
+            <button
+              class="transition ease-in duration-300 hover:text-red-500 text-gray-500 rounded-full w-8 h-8 text-center p-1"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class=""
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                />
+              </svg>
+            </button>
+            <a href="{{ auction.get_absolute_url }}">info</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+  <!-- End Auction Component -->
+  {% empty %}
+  <p>Ciao</p>
+  {% endfor %}
+</section>
+{% endblock content %}

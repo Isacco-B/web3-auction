@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Auction Info{% endblock title %}
+{% block content %}
+  <section>
+    <div class="bg-[#f6f6f9] p-8">
+      <div class="flex flex-col gap-5 bg-white rounded-xl shadow-md">
+        <div class="flex flex-col gap-10 lg:flex-row justify-center p-5">
+          <div class="w-[500px] h-[400px]">
+            <img src={{auction.image.url}} alt="auction-image" class="h-[400px] w-full object-contain rounded-2xl">
+          </div>
+          <div class="w-[500px] h-[400px] flex flex-col">
+            <h1>{{ auction.title }}</h1>
+            <h3>{{ auction.owner }}</h3>
+            <div class="bg-[#e5e5e5] w-full">
+              {{ auction.start_date }}
+              <form action="" method="post">
+                <input type="text">
+                <input type="text">
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock content %}
