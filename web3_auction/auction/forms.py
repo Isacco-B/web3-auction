@@ -9,10 +9,11 @@ class AuctionForm(ModelForm):
             "title",
             "description",
             "image",
-            "start_price",
-            "start_price",
+            "current_price",
         )
-
+        labels = {
+            'current_price': 'Price'
+        }
 
 class BidForm(ModelForm):
     class Meta:

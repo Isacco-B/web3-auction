@@ -273,6 +273,5 @@ tags
 dump.rdb
 
 ### Project template
-web3_auction/media/
 
 .pytest_cache/

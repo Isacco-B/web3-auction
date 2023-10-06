@@ -27,8 +27,8 @@ class Auction(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="auction_owner")
     title = models.CharField(max_length=100)
     description = models.TextField()
-    image = models.ImageField(blank=True, null=True)
-    start_price = models.PositiveIntegerField(default=0)
+    image = models.ImageField(blank=True, null=True, upload_to='auction/', default="../static/images/auction/default.svg")
+    current_price = models.PositiveIntegerField(default=0)
     end_price = models.PositiveIntegerField(blank=True, null=True)
     start_date = models.DateTimeField(auto_now_add=True)
     end_date = models.DateTimeField(auto_now_add=False, blank=True, null=True)
@@ -49,7 +49,7 @@ class Auction(models.Model):
         return self.title
 
     def get_absolute_url(self):
-        return reverse("Auction_detail", kwargs={"pk": self.pk})
+        return reverse("auctions:detail", kwargs={"pk": self.pk})
 
 
 class Bid(models.Model):

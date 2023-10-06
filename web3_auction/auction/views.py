@@ -1,4 +1,4 @@
-from django.shortcuts import render, reverse
+from django.urls import reverse_lazy
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import get_user_model
@@ -41,10 +41,14 @@ class AuctionCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     success_message = "Auction successfully created"
 
     def form_valid(self, form):
-        user = User.objects.get(username=self.request.user)
-        form = form.save(commit=False)
-        form.owner = user
+        user = User.objects.get(email=self.request.user.email)
+        auction = form.save(commit=False)
+        auction.owner = user
+        auction.save()
         return super(AuctionCreateView, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy("auctions:list")
 
 
 auction_create_view = AuctionCreateView.as_view()
@@ -59,7 +63,7 @@ class AuctionDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
         return Auction.objects.filter(is_active=True, user=self.request.user.pk)
 
     def get_success_url(self):
-        return reverse("landing-page")
+        return reverse_lazy("home")
 
 
 auction_delete_view = AuctionDeleteView.as_view()
