@@ -6,8 +6,10 @@
   {% translate "Verify Your E-mail Address" %}
 {% endblock head_title %}
 {% block inner %}
-  <h1>{% translate "Verify Your E-mail Address" %}</h1>
+<div class="bg-gray-100 p-5 rounded-md mt-5">
+  <h1 class="text-lg font-semibold">{% translate "Verify Your E-mail Address" %}</h1>
   <p>
     {% blocktranslate %}We have sent an e-mail to you for verification. Follow the link provided to finalize the signup process. Please contact us if you do not receive it within a few minutes.{% endblocktranslate %}
   </p>
+</div>
 {% endblock inner %}
