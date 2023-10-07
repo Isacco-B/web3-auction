@@ -18,8 +18,11 @@ ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1"]
 # https://docs.djangoproject.com/en/dev/ref/settings/#caches
 CACHES = {
     "default": {
-        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-        "LOCATION": "",
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379",
+        "OPTIONS": {
+            "db": "10",
+        },
     }
 }
 
