@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+  User:
+    {{ profile.username }}
+{% endblock title %}
+
+{% block content %}
+  <!-- Profile -->
+<section class="p-16 bg-gray-100 rounded-lg max-sm:p-2">
+  <div class="p-8 bg-white shadow mt-24 rounded-lg max-sm:p-2">
+    <div class="grid grid-cols-1 md:grid-cols-3">
+      <div class="grid grid-cols-3 text-center order-last md:order-first mt-20 md:mt-0">
+        <div>
+          <a href={% url "users:profile-follower" profile.pk %} class="font-bold text-gray-700 text-xl">{{followers.count}}</a>
+          <p class="text-gray-400">Followers</p>
+        </div>
+        <div>
+          <a href={% url "users:profile-following" profile.pk %} class="font-bold text-gray-700 text-xl">{{following.count}}</a>
+          <p class="text-gray-400">Following</p>
+        </div>
+        <div>
+          <p class="font-bold text-gray-700 text-xl">{{profile.user.auctions.count}}</p>
+          <p class="text-gray-400">Auction</p>
+        </div>
+      </div>
+      <div class="relative">
+        <div
+          class="w-48 h-48 bg-gray-200 mx-auto rounded-full shadow-2xl absolute inset-x-0 top-0 -mt-24 flex items-center justify-center"
+        >
+          <img src={{profile.profile_image.url}} alt="Profile Image" class="h-32 w-32 rounded-full object-cover">
+        </div>
+      </div>
+      <div class="space-x-8 flex justify-between mt-32 md:mt-0 md:justify-center">
+      {% if request.user.pk != profile.user.pk%}
+        <form method="post" action="{% url "users:follow_user" profile.id %}">
+          {% csrf_token %}
+          <button type="submit" class="text-white py-2 px-4 uppercase rounded bg-purple-400 hover:bg-purple-500 shadow hover:shadow-lg font-medium transition transform hover:-translate-y-0.5">
+            {% if user in profile.followers.all %}
+              Unfollow
+            {% else %}
+              Follow
+            {% endif %}
+          </button>
+        </form>
+        {% endif %}
+      </div>
+    </div>
+    <div class="mt-20 text-center border-b pb-12">
+      <h1 class="text-2xl font-medium text-gray-700">
+        @{{profile.username}}, <span class="font-light text-gray-500">{{profile.age}}</span>
+      </h1>
+      <p class="font-light text-gray-600 mt-3">{{profile.city}}</p>
+      <p class="text-gray-600 text-center font-light lg:px-16">
+        {{profile.description}}
+      </p>
+      <div class="flex items-center justify-center gap-5 mt-4">
+        {% if profile.website_url %}
+          <a href={{profile.website_url}} target="_blank">
+            <img src={% static "images/social/website.svg" %} alt="Social Icon" class="w-5 h-5">
+          </a>
+        {% endif %}
+        {% if profile.x_url %}
+          <a href={{profile.x_url}} target="_blank">
+            <img src={% static "images/social/twitter.svg" %} alt="Social Icon" class="w-5 h-5">
+          </a>
+        {% endif %}
+        {% if profile.instagram_url %}
+          <a href={{profile.instagram_url}} target="_blank">
+            <img src={% static "images/social/instagram.svg" %} alt="Social Icon" class="w-5 h-5">
+          </a>
+        {% endif %}
+        {% if profile.tiktok_url %}
+          <a href={{profile.tiktok_url}} target="_blank">
+            <img src={% static "images/social/tiktok.svg" %} alt="Social Icon" class="w-5 h-5">
+          </a>
+        {% endif %}
+      </div>
+    </div>
+    {% block inner %}{% endblock inner %}
+    <div class="mt-12 flex justify-center gap-5">
+      <div><a href="" class="text-center text-purple-300 hover:text-purple-400 hover:underline font-medium mt-5">Delete</a></div>
+      <div><a href={% url "users:profile-update" profile.id %} class="text-center text-purple-400 hover:text-purple-500 hover:underline font-medium mt-5">Update</a></div>
+    </div>
+  </div>
+</section>
+{% endblock content %}
+

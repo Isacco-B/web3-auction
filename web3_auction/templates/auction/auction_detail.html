@@ -1,28 +1,153 @@
 {% extends 'base.html' %}
 {% load static %}
-
+{% load tailwind_filters %}
 {% block title %}Auction Info{% endblock title %}
 {% block content %}
-  <section>
-    <div class="bg-[#f6f6f9] p-8">
-      <div class="flex flex-col gap-5 bg-white rounded-xl shadow-md">
-        <div class="flex flex-col gap-10 lg:flex-row justify-center p-5">
-          <div class="w-[500px] h-[400px]">
-            <img src={{auction.image.url}} alt="auction-image" class="h-[400px] w-full object-contain rounded-2xl">
+<div class="p-5 bg-gray-100">
+  <div class="w-full flex md:flex-row flex-col mt-10 gap-[30px]">
+    <div class="flex-1 flex-col bg-white rounded-lg">
+      <img
+        src={{auction.image.url}}
+        alt="campaign"
+        class="w-full h-[410px] object-contain rounded-xl"
+      />
+      <div class="relative w-full h-[5px] bg-[#3a3a43] mt-2">
+        <div class="absolute h-full bg-[#4acd8d] w-full"></div>
+      </div>
+    </div>
+    <div class="flex md:w-[150px] w-full flex-wrap justify-between gap-[30px] max-sm:justify-center">
+      <div class="flex flex-col items-center w-[150px] max-sm:w-[250px]">
+        <h4 class="font-epilogue font-bold text-[30px text-black p-3 bg-white rounded-t-[10px] w-full text-center truncate">
+          5
+        </h4>
+        <p class="font-epilogue font-normal text-[16px] text-[#171718] bg-[#e3e3e4] px-3 py-2 w-full rounded-b-[10px] text-center">
+          Days Left
+        </p>
+      </div>
+      <div class="flex flex-col items-center w-[150px] max-sm:w-[250px]">
+        <h4 class="font-epilogue font-bold text-[30px text-black p-3 bg-white rounded-t-[10px] w-full text-center truncate">
+          {{auction.bids.count}}
+        </h4>
+        <p class="font-epilogue font-normal text-[16px] text-[#171718] bg-[#e3e3e4] px-3 py-2 w-full rounded-b-[10px] text-center">
+          Total Bidders
+        </p>
+      </div>
+      <div class="flex flex-col items-center w-[150px] max-sm:w-[250px]">
+        <h4 class="font-epilogue font-bold text-[30px text-black p-3 bg-white rounded-t-[10px] w-full text-center truncate">
+          {{auction.current_price}}
+        </h4>
+        <p class="font-epilogue font-normal text-[16px] text-[#171718] bg-[#e3e3e4] px-3 py-2 w-full rounded-b-[10px] text-center">
+          Best Offert
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="mt-[60px] flex lg:flex-row flex-col gap-5">
+    <div class="flex-[2] flex flex-col gap-[40px]">
+      <div>
+        <h4 class="font-epilogue font-semibold text-[18px text-black uppercase">
+          Creator
+        </h4>
+        <div class="flex flex-row w-full mt-[20px] items-center flex-wrap gap-[14px]">
+          <div class="w-[52px] h-[52px] flex items-center justify-center rounded-full bg-white cursor-pointer">
+            <img src={{auction.owner.profile.profile_image.url}} alt="user" class="w-[60%] h-[60%] object-cover rounded-full" />
           </div>
-          <div class="w-[500px] h-[400px] flex flex-col">
-            <h1>{{ auction.title }}</h1>
-            <h3>{{ auction.owner }}</h3>
-            <div class="bg-[#e5e5e5] w-full">
-              {{ auction.start_date }}
-              <form action="" method="post">
-                <input type="text">
-                <input type="text">
-              </form>
-            </div>
+          <div>
+            <h4 class="font-epilogue font-semibold text-[14px] text-black break-all">
+              @{{auction.owner.profile.username}}
+            </h4>
+            <p class="mt-[4px] font-epilogue font-normal text-[12px] text-[#171718]">
+              {{auction.owner.auctions.all.count}} Active auctions
+            </p>
+          </div>
+        </div>
+        <div>
+          <h4 class="font-epilogue font-semibold text-[18px] text-black uppercase mt-8">
+            Title
+          </h4>
+          <div class="mt-[20px]">
+            <p class="font-epilogue font-normal text-[16px] text-[#171718] leading-[26px] text-justify bg-white rounded-lg p-2">
+              {{auction.title}}
+            </p>
+          </div>
+        </div>
+        <div>
+          <h4 class="font-epilogue font-semibold text-[18px] text-black uppercase mt-8">
+            Description
+          </h4>
+          <div class="mt-[20px]">
+            <p class="font-epilogue font-normal text-[16px] text-[#171718] leading-[26px] text-justify bg-white rounded-lg p-2">
+              {{auction.description}}
+            </p>
+          </div>
+        </div>
+        <div>
+          <h4 class="font-epilogue font-semibold text-[18px] text-black uppercase mt-8">
+            Recent offers
+          </h4>
+          <div class="mt-[20px] flex-col gap-4 bg-white p-5 rounded-md">
+            {% with sorted_bids=auction.bids.all|dictsortreversed:"bid_date" %}
+              {% for bidder in sorted_bids|slice:":4" %}
+              <div class="flex justify-between items-center bg-gray-100 h-[40px] px-5 max-sm:px-1 rounded-[10px] my-2">
+                <p class="font-epilogue font-normal text-[16px] text-black leading-[26px] break-all truncate w-[240px] max-sm:w-[100px]">
+                  {{bidder.bidder.profile}}
+                </p>
+                <p class="font-epilogue font-normal text-[16px] text-black leading-[26px] break-all">
+                  {{bidder.amount}} $
+                </p>
+                <p class="font-epilogue font-normal text-[16px] text-black leading-[26px] break-all">
+                  <div>{{ bidder.bid_date|date:"d/m/y" }} : {{ bidder.bid_date|date:"H.i" }}</div>
+                </p>
+              </div>
+              {% endfor %}
+            {% endwith %}
           </div>
         </div>
       </div>
     </div>
-  </section>
+    <div class="flex-1">
+      <h4 class="font-epilogue font-semibold text-[18px] text-black uppercase">
+        Start Price
+      </h4>
+      <div class="my-[20px] flex flex-col p-4 bg-white rounded-[10px]">
+        <p class="font-epilogue font-normal text-[16px] text-[#171718] leading-[26px] text-justify bg-white rounded-lg p-2">
+          {{auction.current_price}} $
+        </p>
+      </div>
+      <h4 class="font-epilogue font-semibold text-[18px] text-black uppercase">
+        Current Price
+      </h4>
+      <div class="my-[20px] flex flex-col p-4 bg-white rounded-[10px]">
+        <pclass="font-epilogue font-normal text-[16px] text-[#171718] leading-[26px] text-justify bg-white rounded-lg p-2">
+          {{auction.current_price}} $
+        </p>
+      </div>
+      <h4 class="font-epilogue font-semibold text-[18px] text-black uppercase">
+        Fund
+      </h4>
+      <div class="mt-[20px] flex flex-col p-4 bg-white rounded-[10px]">
+        <p class="font-epilogue font-medium text-[20px] leading-[30px] text-center text-[#808191]">
+          Found the campaing
+        </p>
+        <div class="mt-[30px]">
+          <form action="{% url 'auctions:bid-create' auction.id %}" method="post">
+            {% csrf_token %}
+            {{ bid_form|crispy }}
+            <div class="mt-[20px] p-4 bg-[#e3e3e4] rounded-[10px]">
+              <h4 class="font-epilogue font-semibold text-[14px] leading-[22px] text-black">
+                Back it because you believe in it.
+              </h4>
+              <p class="my-[20px] font-epilogue font-normal leading-[22px] text-[#808191]">
+                Support the project for no reward, just because it speaks to you
+              </p>
+            </div>
+            <button class="mt-4 p-2 bg-purple-500 ring-1 ring-purple-400 text-white font-semibold rounded-md w-full">
+              Submit
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock content %}

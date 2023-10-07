@@ -1,0 +1,454 @@
+{% load static %}
+
+<div class="2xl:container 2xl:mx-auto">
+  <div class="md:py-12 lg:px-20 md:px-6 py-9 px-4 m-auto flex items-center justify-between max-sm:flex-col">
+    <p class="text-xl leading-5 text-gray-600 font-medium">
+      {{auctions.count}} Auction
+    </p>
+    <div>
+      <!-- filters Button (md and plus Screen) -->
+      <button
+        onclick="showFilters()"
+        class="cursor-pointer sm:flex hidden bg-blue-100 hover:bg-blue-200 hover:text-gray-700 focus:ring-offset-2 focus:ring-gray-800 py-4 px-6 text-base leading-4 font-normal text-gray-600 rounded-xl justify-center items-center"
+      >
+        <img
+          class="dark:hidden"
+          src="https://tuk-cdn.s3.amazonaws.com/can-uploader/filter1-svg1.svg"
+        />
+        <img
+          class="hidden dark:block w-5 ml-2"
+          src={% static 'img/filter.svg' %}
+          alt="filter"
+        />
+        Filters
+      </button>
+    </div>
+
+    <!-- Filters Button (Small Screen) -->
+
+    <button
+      onclick="showFilters()"
+      class="cursor-pointer mt-6 sm:hidden hover:bg-gray-700 focus:ring-offset-2 focus:ring-gray-800 py-2 w-full bg-gray-800 flex text-base leading-4 font-normal text-white justify-center items-center"
+    >
+      <img
+        class="hidden dark:block w-5"
+        src={% static 'img/filter.svg' %}
+        alt="filter"
+      />
+      Filters
+    </button>
+  </div>
+
+  <div
+    id="filterSection"
+    class="relative md:py-10 lg:px-20 md:px-6 py-9 px-4 bg-white w-full hidden"
+  >
+    <!-- Cross button Code -->
+    <div
+      onclick="closeFilterSection()"
+      class="cursor-pointer absolute right-0 top-0 md:py-10 lg:px-20 md:px-6 py-9 px-4"
+    >
+      <img
+        class="hidden dark:block w-5"
+        src={% static 'img/close-menu.svg' %}
+        alt="cross"
+      />
+    </div>
+
+    <!-- Colors Section -->
+    <div>
+      <div class="flex space-x-2 text-gray-800">
+        <img
+          class="dark:hidden"
+          src="https://tuk-cdn.s3.amazonaws.com/can-uploader/filter1-svg3.svg"
+          alt="colors"
+        />
+        <img
+          class="hidden dark:block"
+          src="https://tuk-cdn.s3.amazonaws.com/can-uploader/filter1-svg3dark.svg"
+          alt="colors"
+        />
+        <p class="lg:text-2xl text-xl lg:leading-6 leading-5 font-medium">
+          Colors
+        </p>
+      </div>
+      <div class="md:flex md:space-x-6 mt-8 grid grid-cols-3 gap-y-8 flex-wrap">
+        <div
+          class="flex space-x-2 md:justify-center md:items-center items-center justify-start"
+        >
+          <div class="w-4 h-4 rounded-full bg-white shadow"></div>
+          <p
+            class="text-base leading-4 text-gray-600 font-normal"
+          >
+            White
+          </p>
+        </div>
+        <div class="flex space-x-2 justify-center items-center">
+          <div class="w-4 h-4 rounded-full bg-blue-600 shadow"></div>
+          <p
+            class="text-base leading-4 text-gray-600 font-normal"
+          >
+            Blue
+          </p>
+        </div>
+        <div
+          class="flex space-x-2 md:justify-center md:items-center items-center justify-end"
+        >
+          <div class="w-4 h-4 rounded-full bg-red-600 shadow"></div>
+          <p
+            class="text-base leading-4 text-gray-600 font-normal"
+          >
+            Red
+          </p>
+        </div>
+        <div
+          class="flex space-x-2 md:justify-center md:items-center items-center justify-start"
+        >
+          <div class="w-4 h-4 rounded-full bg-indigo-600 shadow"></div>
+          <p
+            class="text-base leading-4 text-gray-600 font-normal"
+          >
+            Indigo
+          </p>
+        </div>
+        <div class="flex space-x-2 justify-center items-center">
+          <div class="w-4 h-4 rounded-full bg-black shadow"></div>
+          <p
+            class="text-base leading-4 text-gray-600 font-normal"
+          >
+            Black
+          </p>
+        </div>
+        <div
+          class="flex space-x-2 md:justify-center md:items-center items-center justify-end"
+        >
+          <div class="w-4 h-4 rounded-full bg-purple-600 shadow"></div>
+          <p
+            class="text-base leading-4 text-gray-600 font-normal"
+          >
+            Purple
+          </p>
+        </div>
+        <div
+          class="flex space-x-2 md:justify-center md:items-center items-center justify-start"
+        >
+          <div class="w-4 h-4 rounded-full bg-gray-600 shadow"></div>
+          <p
+            class="text-base leading-4 text-gray-600 font-normal"
+          >
+            Grey
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <hr class="bg-gray-200 lg:w-6/12 w-full md:my-10 my-8" />
+
+    <!-- Material Section -->
+    <div>
+      <div class="flex space-x-2 text-gray-800">
+        <img
+          class="dark:hidden"
+          src="https://tuk-cdn.s3.amazonaws.com/can-uploader/filter1-svg4.svg"
+          alt="materials"
+        />
+        <img
+          class="hidden dark:block"
+          src="https://tuk-cdn.s3.amazonaws.com/can-uploader/filter1-svg4dark.svg"
+          alt="materials"
+        />
+        <p class="lg:text-2xl text-xl lg:leading-6 leading-5 font-medium">
+          Material
+        </p>
+      </div>
+      <div class="md:flex md:space-x-6 mt-8 grid grid-cols-3 gap-y-8 flex-wrap">
+        <div
+          class="flex space-x-2 md:justify-center md:items-center items-center justify-start"
+        >
+          <input
+            class="w-4 h-4 mr-2"
+            type="checkbox"
+            id="Leather"
+            name="Leather"
+            value="Leather"
+          />
+          <div class="inline-block">
+            <div class="flex space-x-6 justify-center items-center">
+              <label
+                class="mr-2 text-sm leading-3 font-normal text-gray-600"
+                for="Leather"
+                >Leather</label
+              >
+            </div>
+          </div>
+        </div>
+        <div class="flex justify-center items-center">
+          <input
+            class="w-4 h-4 mr-2"
+            type="checkbox"
+            id="Cotton"
+            name="Cotton"
+            value="Cotton"
+          />
+          <div class="inline-block">
+            <div class="flex space-x-6 justify-center items-center">
+              <label
+                class="mr-2 text-sm leading-3 font-normal text-gray-600"
+                for="Cotton"
+                >Cotton</label
+              >
+            </div>
+          </div>
+        </div>
+        <div
+          class="flex space-x-2 md:justify-center md:items-center items-center justify-end"
+        >
+          <input
+            class="w-4 h-4 mr-2"
+            type="checkbox"
+            id="Fabric"
+            name="Fabric"
+            value="Fabric"
+          />
+          <div class="inline-block">
+            <div class="flex space-x-6 justify-center items-center">
+              <label
+                class="mr-2 text-sm leading-3 font-normal text-gray-600"
+                for="Fabric"
+                >Fabric</label
+              >
+            </div>
+          </div>
+        </div>
+        <div
+          class="flex space-x-2 md:justify-center md:items-center items-center justify-start"
+        >
+          <input
+            class="w-4 h-4 mr-2"
+            type="checkbox"
+            id="Crocodile"
+            name="Crocodile"
+            value="Crocodile"
+          />
+          <div class="inline-block">
+            <div class="flex space-x-6 justify-center items-center">
+              <label
+                class="mr-2 text-sm leading-3font-normal text-gray-600"
+                for="Crocodile"
+                >Crocodile</label
+              >
+            </div>
+          </div>
+        </div>
+        <div class="flex justify-center items-center">
+          <input
+            class="w-4 h-4 mr-2"
+            type="checkbox"
+            id="Wool"
+            name="Wool"
+            value="Wool"
+          />
+          <div class="inline-block">
+            <div class="flex space-x-6 justify-center items-center">
+              <label
+                class="mr-2 text-sm leading-3 font-normal text-gray-600"
+                for="Wool"
+                >Wool</label
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="bg-gray-200 lg:w-6/12 w-full md:my-10 my-8" />
+
+    <!-- Size Section -->
+    <div>
+      <div class="flex space-x-2 text-gray-800">
+        <img
+          class="dark:hidden"
+          src="https://tuk-cdn.s3.amazonaws.com/can-uploader/filter1-svg5.svg"
+          alt="size"
+        />
+        <img
+          class="hidden dark:block"
+          src="https://tuk-cdn.s3.amazonaws.com/can-uploader/filter1-svg5dark.svg"
+          alt="size"
+        />
+        <p class="lg:text-2xl text-xl lg:leading-6 leading-5 font-medium">
+          Size
+        </p>
+      </div>
+      <div class="md:flex md:space-x-6 mt-8 grid grid-cols-3 gap-y-8 flex-wrap">
+        <div
+          class="flex md:justify-center md:items-center items-center justify-start"
+        >
+          <input
+            class="w-4 h-4 mr-2"
+            type="checkbox"
+            id="Large"
+            name="Large"
+            value="Large"
+          />
+          <div class="inline-block">
+            <div class="flex space-x-6 justify-center items-center">
+              <label
+                class="mr-2 text-sm leading-3 font-normal text-gray-600"
+                for="Large"
+                >Large</label
+              >
+            </div>
+          </div>
+        </div>
+        <div class="flex justify-center items-center">
+          <input
+            class="w-4 h-4 mr-2"
+            type="checkbox"
+            id="Medium"
+            name="Medium"
+            value="Medium"
+          />
+          <div class="inline-block">
+            <div class="flex space-x-6 justify-center items-center">
+              <label
+                class="mr-2 text-sm leading-3 font-normal text-gray-600"
+                for="Medium"
+                >Medium</label
+              >
+            </div>
+          </div>
+        </div>
+        <div
+          class="flex md:justify-center md:items-center items-center justify-end"
+        >
+          <input
+            class="w-4 h-4 mr-2"
+            type="checkbox"
+            id="Small"
+            name="Small"
+            value="Small"
+          />
+          <div class="inline-block">
+            <div class="flex space-x-6 justify-center items-center">
+              <label
+                class="mr-2 text-sm leading-3 font-normal text-gray-600"
+                for="Small"
+                >Small</label
+              >
+            </div>
+          </div>
+        </div>
+        <div
+          class="flex md:justify-center md:items-center items-center justify-start"
+        >
+          <input
+            class="w-4 h-4 mr-2"
+            type="checkbox"
+            id="Mini"
+            name="Mini"
+            value="Mini"
+          />
+          <div class="inline-block">
+            <div class="flex space-x-6 justify-center items-center">
+              <label
+                class="mr-2 text-sm leading-3 font-normal text-gray-600"
+                for="Mini"
+                >Mini</label
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="bg-gray-200 lg:w-6/12 w-full md:my-10 my-8" />
+
+    <!-- Collection Section -->
+    <div>
+      <div class="flex space-x-2 text-gray-800">
+        <img
+          class="dark:hidden"
+          src="https://tuk-cdn.s3.amazonaws.com/can-uploader/filter1-svg6.svg"
+          alt="collection"
+        />
+        <img
+          class="hidden dark:block"
+          src="https://tuk-cdn.s3.amazonaws.com/can-uploader/filter1-svg6dark.svg"
+          alt="collection"
+        />
+        <p class="lg:text-2xl text-xl lg:leading-6 leading-5 font-medium">
+          Collection
+        </p>
+      </div>
+      <div class="flex mt-8 space-x-8">
+        <div class="flex justify-center items-center">
+          <input
+            class="w-4 h-4 mr-2"
+            type="checkbox"
+            id="LS"
+            name="LS"
+            value="LS"
+          />
+          <div class="inline-block">
+            <div class="flex space-x-6 justify-center items-center">
+              <label
+                class="mr-2 text-sm leading-3 font-normal text-gray-600"
+                for="LS"
+                >Luxe signature</label
+              >
+            </div>
+          </div>
+        </div>
+        <div class="flex justify-center items-center">
+          <input
+            class="w-4 h-4 mr-2"
+            type="checkbox"
+            id="LxL"
+            name="LxL"
+            value="LxL"
+          />
+          <div class="inline-block">
+            <div class="flex space-x-6 justify-center items-center">
+              <label
+                class="mr-2 text-sm leading-3 font-normal text-gray-600"
+                for="LxL"
+                >Luxe x London</label
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Apply Filter Button (Large Screen) -->
+
+    <div
+      class="hidden md:block absolute right-0 bottom-0 md:py-10 lg:px-20 md:px-6 py-9 px-4"
+    >
+      <button
+        onclick="applyFilters()"
+        class="w-full px-6 py-3 mt-6 text-sm font-semibold tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-600 rounded-lg hover:bg-blue-500 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-50"
+      >
+        Apply Filter
+      </button>
+    </div>
+
+    <!-- Apply Filter Button (Table or lower Screen) -->
+
+    <div class="block md:hidden w-full mt-10">
+      <button
+        onclick="applyFilters()"
+        class="w-full px-6 py-3 mt-6 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-600 rounded-lg hover:bg-blue-500 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-50"
+      >
+        Apply Filter
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .checkbox:checked + .check-icon {
+    display: flex;
+  }
+</style>

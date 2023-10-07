@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<section class="m-3 p-5 bg-gray-100 rounded-lg">
+  <div class="text-center p-[16px] sm:max-w-[380px] bg-gray-200 rounded-lg m-auto mb-4 shadow-md">
+    <h1 class="text-black font-epilogue font-bold sm:text-[25px] text-[18px] leading-[38px]">
+      Update Profile
+    </h1>
+  </div>
+  <div>
+    <form action="" method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{form|crispy}}
+      <button type="submit" class="text-white bg-purple-500 hover:bg-purple-600 px-4 py-2 hover:ring-purple-700 hover:ring-2 rounded-md">Save</button>
+    </form>
+  </div>
+</section>
+{% endblock content %}
