@@ -1,5 +1,9 @@
 from django.contrib.auth import get_user_model
+from .models import Profile
+from .forms import ProfileForm
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -48,7 +52,65 @@ class UserRedirectView(LoginRequiredMixin, RedirectView):
     permanent = False
 
     def get_redirect_url(self):
-        return reverse("users:detail", kwargs={"pk": self.request.user.pk})
+        return reverse("users:profile-detail", kwargs={"pk": self.request.user.profile.pk})
 
 
 user_redirect_view = UserRedirectView.as_view()
+
+
+class ProfileDetailView(LoginRequiredMixin, DetailView):
+    context_object_name = "profile"
+    template_name = None
+
+    def get_queryset(self):
+        return Profile.objects.all()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+
+        profile = self.get_object()
+        followers = profile.followers.all()
+        following = profile.following.all()
+
+        context['followers'] = followers
+        context['following'] = following
+        context['is_following'] = user in followers
+
+        return context
+
+
+class ProfileUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+    form_class = ProfileForm
+    template_name = "../templates/profile/profile_update.html"
+
+    def form_valid(self, form):
+        form.save()
+        return super(ProfileUpdateView, self).form_valid(form)
+
+    def get_queryset(self):
+        return Profile.objects.all()
+
+    def get_success_url(self):
+        return reverse("users:redirect")
+
+
+profile_update_view = ProfileUpdateView.as_view()
+
+
+@login_required
+def follow_user(request, profile_id):
+    profile_to_follow = get_object_or_404(Profile, id=profile_id)
+    profile = get_object_or_404(Profile, id=request.user.profile.id)
+    user = request.user
+
+    if user != profile_to_follow.user:
+        if user in profile_to_follow.followers.all():
+            profile_to_follow.followers.remove(user)
+            profile.following.remove(profile_to_follow.user)
+        else:
+            profile_to_follow.followers.add(user)
+            profile.following.add(profile_to_follow.user)
+
+    return redirect('users:profile-detail', pk=profile_id)
+

@@ -24,7 +24,7 @@ class Auction(models.Model):
     - is_active: Auction's active status (default: True)
     """
 
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="auction_owner")
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="auctions")
     title = models.CharField(max_length=100)
     description = models.TextField()
     image = models.ImageField(blank=True, null=True, upload_to='auction/', default="../static/images/auction/default.svg")

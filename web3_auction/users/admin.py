@@ -2,11 +2,16 @@ from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth import admin as auth_admin
 from django.contrib.auth import get_user_model, decorators
+from .models import Profile
 from django.utils.translation import gettext_lazy as _
 
 from web3_auction.users.forms import UserAdminChangeForm, UserAdminCreationForm
 
 User = get_user_model()
+
+
+admin.site.register(Profile)
+
 
 if settings.DJANGO_ADMIN_FORCE_ALLAUTH:
     # Force the `admin` sign in process to go through the `django-allauth` workflow:
