@@ -6,7 +6,7 @@ from .views import (
     auction_detail_view,
     auction_delete_view,
     # Bid
-    bid_create_view,
+    save_form_data_to_cache,
 )
 
 app_name = "auctions"
@@ -16,5 +16,5 @@ urlpatterns = [
     path("<int:pk>/", view=auction_detail_view, name="detail"),
     path("delete/<int:pk>/", view=auction_delete_view, name="delete"),
     # Bid
-    path("~bid/create/<int:pk>/", view=bid_create_view, name="bid-create"),
+    path("~bid/create/<int:pk>/", view=save_form_data_to_cache, name="bid-create"),
 ]

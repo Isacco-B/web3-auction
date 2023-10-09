@@ -67,7 +67,11 @@
   </article>
   <!-- End Auction Component -->
   {% empty %}
+  {% if request.user == profile.user %}
   <p>There are no auctions available, create your first <a href={% url "auctions:create" %} class="font-semibold underline">auction!</a></p>
+  {% else %}
+  <p>There are no auctions available!</p>
+  {% endif %}
   {% endfor %}
 </section>
 {% endblock inner %}

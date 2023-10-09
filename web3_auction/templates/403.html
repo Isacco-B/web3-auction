@@ -2,12 +2,27 @@
 
 {% block title %}Forbidden (403){% endblock title %}
 {% block content %}
-  <h1>Forbidden (403)</h1>
-  <p>
-    {% if exception %}
-      {{ exception }}
-    {% else %}
-      You're not allowed to access this page.
-    {% endif %}
-  </p>
+<section class="bg-white py-6 sm:py-8 lg:py-12">
+  <div class="max-w-screen-lg px-4 md:px-8 mx-auto">
+    <div class="grid sm:grid-cols-2 gap-8">
+      <!-- content - start -->
+      <div class="flex flex-col justify-center items-center sm:items-start md:py-24 lg:py-32">
+        <p class="text-purple-500 text-sm md:text-base font-semibold uppercase mb-4">Error 403</p>
+        <h1 class="text-gray-800 text-2xl md:text-3xl font-bold text-center sm:text-left mb-2">Not allowed</h1>
+        <p>
+          {% if exception %}
+            {{ exception }}
+          {% else %}
+          <p class="text-gray-500 md:text-lg text-center sm:text-left mb-8">You're not allowed to access this page.</p>
+          {% endif %}
+        </p>
+        <a href={% url 'home' %}
+          class="inline-block bg-gray-200 hover:bg-gray-300 focus-visible:ring ring-indigo-300 text-gray-500 active:text-gray-700 text-sm md:text-base font-semibold text-center rounded-lg outline-none transition duration-100 px-8 py-3">Go
+          home</a>
+      </div>
+      <!-- content - end -->
+    </div>
+  </div>
+</section>
 {% endblock content %}
+

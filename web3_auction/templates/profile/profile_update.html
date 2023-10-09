@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
 
+{% block title %}
+  Update:
+    {{ profile.username }}
+{% endblock title %}
+
 {% block content %}
 <section class="m-3 p-5 bg-gray-100 rounded-lg">
   <div class="text-center p-[16px] sm:max-w-[380px] bg-gray-200 rounded-lg m-auto mb-4 shadow-md">

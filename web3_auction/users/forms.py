@@ -50,7 +50,7 @@ class ProfileForm(ModelForm):
     class Meta:
         model = Profile
         exclude = (
-            'user',
-            'followers',
-            'following',
-            )
+            "user",
+            "followers",
+            "following",
+        )

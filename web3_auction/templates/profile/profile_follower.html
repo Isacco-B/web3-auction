@@ -9,12 +9,12 @@
         <div class="h-full flex items-center border-gray-200 border p-4 rounded-lg bg-white">
           <img alt="team" class="w-16 h-16 bg-white object-cover object-center flex-shrink-0 rounded-full mr-4" src={{follow.profile.profile_image.url}}>
           <div class="flex-grow">
-            <a href={% url "users:profile-detail" follow.profile.id %} class="text-gray-900 title-font font-medium">{{follow}}</a>
+            <a href={% url "users:profile-detail" follow.profile.id %} class="text-gray-900 title-font text-sm font-semibold hover:underline">@{{follow.profile.username}}</a>
           </div>
-          {% if request.user.pk != follow.user.pk%}
+          {% if request.user.pk != follow.profile.user.pk%}
             <form method="post" action="{% url "users:follow_user" follow.profile.id %}">
               {% csrf_token %}
-              <button type="submit" class="bg-purple-400 rounded-md py-1 px-2 text-white font-semibold">
+              <button type="submit" class="bg-purple-400 hover:bg-purple-500 rounded-md py-1 px-2 text-white font-semibold text-sm">
                 {% if user in follow.profile.followers.all %}
                   Unfollow
                 {% else %}

@@ -1,90 +1,125 @@
 {% extends 'base.html' %}
 {% block title %}Auction{% endblock title %}
 {% block content %}
-<div>
-  <div class="my-4">
-    <a href={% url "auctions:create" %} class="p-2 bg-purple-400 hover:bg-purple-500 rounded-md text-white font-semibold">Create</a>
-  </div>
-  <section class="flex flex-wrap gap-8 justify-center py-10 bg-gray-100 rounded-lg">
-    {% for auction in auctions %}
-    <!-- Auction Component -->
-    <article class="max-w-[360px] bg-white shadow-lg rounded-xl p-6">
-      <div class="flex flex-col">
-        <div class="">
-          <div class="relative h-62 w-full mb-3">
-            <div class="absolute flex flex-col top-0 right-0">
-              <button
-                class="transition ease-in duration-300 hover:text-red-500 text-gray-500 rounded-full w-8 h-8 text-center p-1"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
+<div class="p-2">
+  {% include "/home/isacco/Desktop/Web3Auction/web3_auction/web3_auction/templates/components/filter.html" %}
+  <section class="bg-gray-100 rounded-lg relative pt-10">
+    <a href={% url "auctions:create" %} class="p-2 bg-purple-400 hover:bg-purple-500 rounded-md text-white font-semibold absolute top-3 left-3 mb-4">Add one</a>
+    <div class="flex flex-wrap gap-8 justify-center py-10">
+      {% for auction in auctions %}
+      <!-- Auction Component -->
+      <article class="max-w-[360px] bg-white shadow-lg rounded-xl p-6 relative">
+        <div class="flex flex-col">
+          <div class="">
+            <div class="h-62 w-full mb-3">
+              <div class="absolute flex flex-col top-0 right-0">
+                <button
+                  class="transition ease-in duration-300 hover:text-red-500 text-gray-500 rounded-full w-8 h-8 text-center p-1"
                 >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                  />
-                </svg>
-              </button>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                    />
+                  </svg>
+                </button>
+              </div>
+              <img src={{auction.image.url}} alt="auction image"
+              class="h-[200px] w-full object-contain rounded-2xl" />
             </div>
-            <img src={{auction.image.url}} alt="auction image"
-            class="h-[200px] w-full object-contain rounded-2xl" />
-          </div>
-          <div class="flex-auto justify-evenly">
-            <div class="flex flex-wrap">
-              {% if auction.is_active %}
-              <div
-                class="bg-green-400 text-white text-xs px-2 py-1 rounded-lg mb-2"
-              >
-                OPEN
+            <div class="flex-auto justify-evenly">
+              <div class="flex flex-wrap">
+                {% if auction.is_active %}
+                <div
+                  class="bg-green-400 text-white text-xs px-2 py-1 rounded-lg mb-2"
+                >
+                  OPEN
+                </div>
+                {% else %}
+                <div
+                  class="bg-red-400 text-white text-xs px-2 py-1 rounded-lg mb-2"
+                >
+                  CLOSED
+                </div>
+                {% endif %}
+                <div class="w-full min-w-0">
+                  <h2
+                    class="text-lg mr-auto cursor-pointer text-black hover:text-purple-500 truncate"
+                  >
+                    {{ auction.title }}
+                  </h2>
+                </div>
+                {% if current_bid %}
+                <div class="text-sm text-gray-400">
+                  Current high bid by
+                  <span class="text-black text-sm cursor-pointer"
+                    >@{{ current_bid.bidder_username }}</span
+                  >
+                </div>
+                {% else %}
+                <div class="text-sm text-gray-400">
+                  Initial price:
+                </div>
+                {% endif %}
+              </div>
+              {% if current_bid %}
+              <div class="text-xl text-black font-semibold mt-1">
+                ${{ current_bid.amount }}
               </div>
               {% else %}
-              <div
-                class="bg-red-400 text-white text-xs px-2 py-1 rounded-lg mb-2"
-              >
-                CLOSED
+              <div class="text-xl text-black font-semibold mt-1">
+                ${{ current_bid.amount }}
               </div>
               {% endif %}
-              <div class="w-full min-w-0">
-                <h2
-                  class="text-lg mr-auto cursor-pointer text-black hover:text-purple-500 truncate"
+              <hr class="rounded mt-3 mb-3" />
+              <div class="text-md text-black mb-2">Auction ends date</div>
+              <div class="flex space-x-2 text-sm font-medium justify-between items-center">
+                <p
+                  class="inline-flex items-center text-sm font-medium mb-2 md:mb-0 b text-purple-500"
                 >
-                  {{ auction.title }}
-                </h2>
+                  <span id="countdown-box-{{ auction.id }}">{{ auction.end_date }}</span>
+                </p>
+                <a href="{{ auction.get_absolute_url }}" class="transition ease-in duration-300 inline-flex items-center text-sm font-medium mb-2 md:mb-0 bg-purple-500 px-5 py-2 hover:shadow-lg tracking-wider text-white rounded-full hover:bg-purple-600">info</a>
               </div>
-              <div class="text-sm text-gray-400">
-                Current high bid by
-                <span class="text-black text-sm cursor-pointer"
-                  >@{{ auction.owner }}</span
-                >
-              </div>
-            </div>
-            <div class="text-xl text-black font-semibold mt-1">
-              ${{ auction.current_price }}
-            </div>
-            <hr class="rounded mt-3 mb-3" />
-            <div class="text-md text-black mb-2">Auction ends in</div>
-            <div class="flex space-x-2 text-sm font-medium justify-between items-center">
-              <p
-                class="transition ease-in duration-300 inline-flex items-center text-sm font-medium mb-2 md:mb-0 bg-purple-500 px-5 py-2 hover:shadow-lg tracking-wider text-white rounded-full hover:bg-purple-600"
-              >
-                <span>{{ auction.start_date }}</span>
-              </p>
-              <a href="{{ auction.get_absolute_url }}">info</a>
             </div>
           </div>
         </div>
-      </div>
-    </article>
-    <!-- End Auction Component -->
-    {% empty %}
-    <p>There are no auctions available, create your first <a href={% url "auctions:create" %} class="font-semibold underline">auction!</a></p>
-    {% endfor %}
+      </article>
+      <!-- End Auction Component -->
+      {% empty %}
+      <p>There are no auctions available, create your first <a href={% url "auctions:create" %} class="font-semibold underline">auction!</a></p>
+      {% endfor %}
+    </div>
   </section>
 </div>
 {% endblock content %}
+{% block inline_javascript %}
+<script>
+  function showFilters() {
+      var fSection = document.getElementById("filterSection");
+      if (fSection.classList.contains("hidden")) {
+          fSection.classList.remove("hidden");
+          fSection.classList.add("block");
+      } else {
+          fSection.classList.add("hidden");
+      }
+  }
+
+  function applyFilters() {
+      document.querySelectorAll("input[type=checkbox]").forEach((el) => (el.checked = false));
+  }
+
+  function closeFilterSection() {
+      var fSection = document.getElementById("filterSection");
+      fSection.classList.add("hidden");
+  }
+</script>
+{% endblock inline_javascript%}

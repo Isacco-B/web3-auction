@@ -56,8 +56,8 @@ class Profile(models.Model):
     username = models.CharField(max_length=100, blank=True)
     description = models.TextField(max_length=255, blank=True)
     profile_image = models.ImageField(upload_to="profile/", default="../static/images/profile/default.svg")
-    age = models.IntegerField(blank=True, null=True)
-    gender = models.CharField(choices=GENDER_CHOICES, max_length=50)
+    age = models.PositiveIntegerField(blank=True, null=True)
+    gender = models.CharField(choices=GENDER_CHOICES, max_length=50, default="Other")
     city = models.CharField(max_length=50, blank=True)
     # Contact
     phone_number = models.CharField(max_length=12, blank=True)
@@ -66,8 +66,8 @@ class Profile(models.Model):
     instagram_url = models.URLField(max_length=200, blank=True)
     tiktok_url = models.URLField(max_length=200, blank=True)
     # Follower
-    followers = models.ManyToManyField(User, related_name='following', blank=True)
-    following = models.ManyToManyField(User, related_name='followers', blank=True)
+    followers = models.ManyToManyField(User, related_name="following", blank=True)
+    following = models.ManyToManyField(User, related_name="followers", blank=True)
 
     class Meta:
         verbose_name = _("Profile")

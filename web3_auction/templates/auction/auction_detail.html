@@ -12,21 +12,24 @@
         class="w-full h-[410px] object-contain rounded-xl"
       />
       <div class="relative w-full h-[5px] bg-[#3a3a43] mt-2">
-        <div class="absolute h-full bg-[#4acd8d] w-full"></div>
+        {% if auction.is_active %}
+        <div class="absolute h-full bg-green-400 w-full"></div>
+        {% else %}
+        <div class="absolute h-full bg-red-400 w-full"></div>
+        {% endif %}
       </div>
     </div>
+    {% if auction.is_active %}
     <div class="flex md:w-[150px] w-full flex-wrap justify-between gap-[30px] max-sm:justify-center">
       <div class="flex flex-col items-center w-[150px] max-sm:w-[250px]">
-        <h4 class="font-epilogue font-bold text-[30px text-black p-3 bg-white rounded-t-[10px] w-full text-center truncate">
-          5
-        </h4>
+        <h4 class="font-epilogue font-bold text-[30px text-black p-3 bg-white rounded-t-[10px] w-full text-center truncate" id="countdown-box-{{ auction.id }}" data-end="{{ auction.end_date|date:'c' }}">....</h4>
         <p class="font-epilogue font-normal text-[16px] text-[#171718] bg-[#e3e3e4] px-3 py-2 w-full rounded-b-[10px] text-center">
           Days Left
         </p>
       </div>
       <div class="flex flex-col items-center w-[150px] max-sm:w-[250px]">
         <h4 class="font-epilogue font-bold text-[30px text-black p-3 bg-white rounded-t-[10px] w-full text-center truncate">
-          {{auction.bids.count}}
+          {{bid_list|length }}
         </h4>
         <p class="font-epilogue font-normal text-[16px] text-[#171718] bg-[#e3e3e4] px-3 py-2 w-full rounded-b-[10px] text-center">
           Total Bidders
@@ -34,13 +37,20 @@
       </div>
       <div class="flex flex-col items-center w-[150px] max-sm:w-[250px]">
         <h4 class="font-epilogue font-bold text-[30px text-black p-3 bg-white rounded-t-[10px] w-full text-center truncate">
-          {{auction.current_price}}
+          {% if bid_list%}
+          {% with bid_list|last as last %}
+            {{ last.amount }} $
+          {% endwith %}
+          {% else %}
+            0
+          {% endif %}
         </h4>
         <p class="font-epilogue font-normal text-[16px] text-[#171718] bg-[#e3e3e4] px-3 py-2 w-full rounded-b-[10px] text-center">
           Best Offert
         </p>
       </div>
     </div>
+    {% endif %}
   </div>
   <div class="mt-[60px] flex lg:flex-row flex-col gap-5">
     <div class="flex-[2] flex flex-col gap-[40px]">
@@ -49,12 +59,12 @@
           Creator
         </h4>
         <div class="flex flex-row w-full mt-[20px] items-center flex-wrap gap-[14px]">
-          <div class="w-[52px] h-[52px] flex items-center justify-center rounded-full bg-white cursor-pointer">
+          <div class="w-[52px] h-[52px] flex items-center justify-center rounded-full bg-white">
             <img src={{auction.owner.profile.profile_image.url}} alt="user" class="w-[60%] h-[60%] object-cover rounded-full" />
           </div>
           <div>
-            <h4 class="font-epilogue font-semibold text-[14px] text-black break-all">
-              @{{auction.owner.profile.username}}
+            <h4 class="font-epilogue font-semibold text-[14px] text-black break-all hover:underline">
+              <a href={% url "users:profile-detail" auction.owner.profile.id%}> @{{auction.owner.profile.username}}</a>
             </h4>
             <p class="mt-[4px] font-epilogue font-normal text-[12px] text-[#171718]">
               {{auction.owner.auctions.all.count}} Active auctions
@@ -81,30 +91,70 @@
             </p>
           </div>
         </div>
+        {% if not auction.is_active %}
+        <div class="flex justify-between items-center gap-4">
+          <div class="w-1/2">
+            <h4 class="font-epilogue font-semibold text-[18px] text-black uppercase mt-8">
+              Winner
+            </h4>
+            <div class="mt-[20px]">
+              <p class="font-epilogue font-normal text-[16px] text-[#171718] leading-[26px] text-justify bg-white rounded-lg p-2 hover:underline">
+                <a href={% url "users:profile-detail" auction.winner.profile.id %}>@{{auction.winner.profile.username}}</a>
+              </p>
+            </div>
+          </div>
+          <div class="w-1/2">
+            <h4 class="font-epilogue font-semibold text-[18px] text-black uppercase mt-8">
+              Price
+            </h4>
+            <div class="mt-[20px]">
+              <p class="font-epilogue font-normal text-[16px] text-[#171718] leading-[26px] text-justify bg-white rounded-lg p-2">
+                ${{auction.end_price}}
+              </p>
+            </div>
+          </div>
+        </div>
+        <div>
+          <h4 class="font-epilogue font-semibold text-[18px] text-black uppercase mt-8">
+            ETH transaction
+          </h4>
+          <div class="my-[20px]">
+            <p class="font-epilogue font-normal text-[16px] text-[#171718] leading-[26px] text-justify bg-white rounded-lg p-2 hover:underline">
+              <a href="https://isaccobertoli.com">https://isaccobertoli.com</a>
+            </p>
+          </div>
+        </div>
+        {% endif %}
+
+        {% if auction.is_active %}
         <div>
           <h4 class="font-epilogue font-semibold text-[18px] text-black uppercase mt-8">
             Recent offers
           </h4>
           <div class="mt-[20px] flex-col gap-4 bg-white p-5 rounded-md">
-            {% with sorted_bids=auction.bids.all|dictsortreversed:"bid_date" %}
-              {% for bidder in sorted_bids|slice:":4" %}
+            {% with sorted_bids=bid_list|dictsortreversed:"bid_date" %}
+              {% for bidder in sorted_bids|slice:":5" %}
               <div class="flex justify-between items-center bg-gray-100 h-[40px] px-5 max-sm:px-1 rounded-[10px] my-2">
                 <p class="font-epilogue font-normal text-[16px] text-black leading-[26px] break-all truncate w-[240px] max-sm:w-[100px]">
-                  {{bidder.bidder.profile}}
+                  @{{bidder.bidder_username}}
                 </p>
                 <p class="font-epilogue font-normal text-[16px] text-black leading-[26px] break-all">
                   {{bidder.amount}} $
                 </p>
                 <p class="font-epilogue font-normal text-[16px] text-black leading-[26px] break-all">
-                  <div>{{ bidder.bid_date|date:"d/m/y" }} : {{ bidder.bid_date|date:"H.i" }}</div>
+                  <div>{{ bidder.bid_date }}</div>
                 </p>
               </div>
+              {% empty %}
+                <p>There are currently no offers...  </p>
               {% endfor %}
             {% endwith %}
           </div>
         </div>
+        {% endif %}
       </div>
     </div>
+    {% if auction.is_active %}
     <div class="flex-1">
       <h4 class="font-epilogue font-semibold text-[18px] text-black uppercase">
         Start Price
@@ -118,8 +168,14 @@
         Current Price
       </h4>
       <div class="my-[20px] flex flex-col p-4 bg-white rounded-[10px]">
-        <pclass="font-epilogue font-normal text-[16px] text-[#171718] leading-[26px] text-justify bg-white rounded-lg p-2">
-          {{auction.current_price}} $
+        <p class="font-epilogue font-normal text-[16px] text-[#171718] leading-[26px] text-justify bg-white rounded-lg p-2">
+          {% if bid_list %}
+          {% with bid_list|last as last %}
+            {{ last.amount }} $
+          {% endwith %}
+          {% else %}
+            0 $
+          {% endif %}
         </p>
       </div>
       <h4 class="font-epilogue font-semibold text-[18px] text-black uppercase">
@@ -148,6 +204,34 @@
         </div>
       </div>
     </div>
+    {% endif %}
   </div>
 </div>
 {% endblock content %}
+
+{% block inline_javascript %}
+<script type="text/javascript">
+    const countdownBox = document.getElementById('countdown-box-{{ auction.id }}');
+    const endTimestamp = new Date(countdownBox.getAttribute('data-end')).getTime();
+    const bidForm = document.querySelector('.bid-form form');
+
+    setInterval(() => {
+        const now = new Date().getTime();
+        const diffToEnd = endTimestamp - now;
+
+        if (diffToEnd > 0) {
+            const days = Math.floor(diffToEnd / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diffToEnd % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diffToEnd % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diffToEnd % (1000 * 60)) / 1000);
+            countdownBox.innerHTML = `- ${days}d ${hours}h ${minutes}m ${seconds}s`;
+
+            bidForm.classList.remove('d-none');
+        } else {
+            countdownBox.innerHTML = 'Auction ended';
+
+            bidForm.classList.add('d-none');
+        }
+    }, 1000);
+</script>
+{% endblock inline_javascript %}

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load tailwind_filters %}
+
+{% block content %}
+<div class="flex items-center justify-center mt-20 p-4">
+    <div class="bg-gray-100 p-4 max-w-[500px] m-auto rounded-lg">
+        <div class="max-w-lg mx-auto p-5">
+            <div class="py-5 border-b border-gray-200">
+                <a class="hover:underline text-sm font-semibold" href="{% url 'users:profile-detail' user.profile.pk %}">Go back</a>
+            </div>
+            <h1 class="text-xl text-gray-800">Are you sure you want to delete the account?</h1>
+            <form method="post" class="mt-5">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <button type="submit"
+                    class="w-full text-white bg-purple-400 hover:bg-purple-500 px-3 py-2 rounded-md">Delete</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

@@ -27,7 +27,9 @@ class Auction(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="auctions")
     title = models.CharField(max_length=100)
     description = models.TextField()
-    image = models.ImageField(blank=True, null=True, upload_to='auction/', default="../static/images/auction/default.svg")
+    image = models.ImageField(
+        blank=True, null=True, upload_to="auction/", default="../static/images/auction/default.svg"
+    )
     current_price = models.PositiveIntegerField(default=0)
     end_price = models.PositiveIntegerField(blank=True, null=True)
     start_date = models.DateTimeField(auto_now_add=True)
@@ -44,6 +46,7 @@ class Auction(models.Model):
     class Meta:
         verbose_name = _("Auction")
         verbose_name_plural = _("Auctions")
+        ordering = ["-start_date"]
 
     def __str__(self):
         return self.title
@@ -66,11 +69,12 @@ class Bid(models.Model):
     auction = models.ForeignKey(Auction, on_delete=models.CASCADE, related_name="bids")
     bidder = models.ForeignKey(User, on_delete=models.CASCADE)
     amount = models.PositiveIntegerField(default=0)
-    bid_date = models.DateTimeField(auto_now_add=True)
+    bid_date = models.DateTimeField(auto_now_add=False, auto_now=False)
 
     class Meta:
         verbose_name = _("Bid")
         verbose_name_plural = _("Bids")
+        ordering = ["-bid_date"]
 
     def __str__(self):
         return f"User: {self.bidder.email} | Auction: {self.auction.title} | Bid: {str(self.amount)}"

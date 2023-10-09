@@ -2,11 +2,15 @@ from django.urls import reverse_lazy
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import get_user_model
-from django.shortcuts import get_object_or_404
-from django.views.generic import DetailView, ListView, CreateView, DeleteView
+from django.shortcuts import redirect
+from django.views.generic import DetailView, ListView, CreateView, DeleteView, FormView
 from .models import Auction, Bid
 from .forms import AuctionForm, BidForm
+from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.core.cache import cache
+from django.utils import timezone, dateformat
 import json
 
 
@@ -16,18 +20,29 @@ User = get_user_model()
 # -------Auction View-------
 
 
-class AuctionListView(ListView):
+class AuctionListView(LoginRequiredMixin, ListView):
+    model = Auction
     context_object_name = "auctions"
     template_name = "../templates/auction/auction_list.html"
 
-    def get_queryset(self):
-        return Auction.objects.all()
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        auctions = Auction.objects.all()
+
+        for auction in auctions:
+            cache_key = f"auction_{auction.id}"
+            bid_list = cache.get(cache_key)
+            if bid_list:
+                current_bid = json.loads(bid_list)
+                context["current_bid"] = current_bid[-1]
+
+        return context
 
 
 auction_list_view = AuctionListView.as_view()
 
 
-class AuctionDetailView(DetailView):
+class AuctionDetailView(LoginRequiredMixin, DetailView):
     context_object_name = "auction"
     template_name = "../templates/auction/auction_detail.html"
 
@@ -36,7 +51,12 @@ class AuctionDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        auction_id = self.kwargs["pk"]
+        cache_key = f"auction_{auction_id}"
+        bid_list = cache.get(cache_key)
         context["bid_form"] = BidForm()
+        if bid_list:
+            context["bid_list"] = json.loads(bid_list)
         return context
 
 
@@ -91,42 +111,53 @@ class BidListView(LoginRequiredMixin, ListView):
 bid_list_view = BidListView.as_view()
 
 
-class BidCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
-    form_class = BidForm
-    template_name = "../templates/bid/bid_create.html"
-    success_message = "Bid added successfully"
+@require_POST
+@login_required
+def save_form_data_to_cache(request, pk):
+    form = BidForm(request.POST, request=request, pk=pk)
 
-    def form_valid(self, form):
-        user = User.objects.get(id=self.request.user.id)
-        auction_id = self.kwargs["pk"]
-        auction = get_object_or_404(Auction, pk=auction_id)
-        bid = form.save(commit=False)
-        bid.bidder = user
-        bid.auction = auction
+    if form.is_valid():
+        amount = form.cleaned_data["amount"]
+        auction_id = pk
+        user_id = request.user.pk
+        bidder_username = request.user.profile.username
 
-        bid_data = {
-            'id': bid.id,
-            'amount': bid.amount,
-            'bidder_id': bid.bidder.id,
-            'auction_id': bid.auction.id
-        }
+        cache_key = f"auction_{auction_id}"
+        existing_bid_data = cache.get(cache_key)
 
-        # Memorizza il bid in cache (utilizza un chiave univoca, ad esempio bid:id)
-        cache_key = f'bid:{bid.id}'
-        cache.set(cache_key, json.dumps(bid_data), timeout=None)  # timeout=None significa che non scade
+        if existing_bid_data:
+            existing_bid_data = json.loads(existing_bid_data)
+            existing_bid_data.append(
+                {
+                    "amount": amount,
+                    "user_id": user_id,
+                    "bidder_username": bidder_username,
+                    "auction_id": auction_id,
+                    "bid_date": str(dateformat.format(timezone.now(), "Y-m-d H:i:s")),
+                }
+            )
+            cache.set(cache_key, json.dumps(existing_bid_data), timeout=None)
+        else:
+            bid_data = [
+                {
+                    "amount": amount,
+                    "user_id": user_id,
+                    "bidder_username": bidder_username,
+                    "auction_id": auction_id,
+                    "bid_date": str(dateformat.format(timezone.now(), "Y-m-d H:i:s")),
+                }
+            ]
+            cache.set(cache_key, json.dumps(bid_data), timeout=None)
 
-        return super(BidCreateView, self).form_valid(form)
-
-    def get_form_kwargs(self):
-        kwargs = super(BidCreateView, self).get_form_kwargs()
-        kwargs.update({"request": self.request})
-        return kwargs
-
-    def get_success_url(self):
-        return reverse_lazy("auctions:detail", kwargs={"pk": self.kwargs["pk"]})
-
-
-bid_create_view = BidCreateView.as_view()
+        messages.success(request, "offer sent successfully")
+        return redirect("auctions:detail", pk)
+    else:
+        error_message = form.errors.get("amount", None)
+        if error_message:
+            messages.error(request, error_message)
+        else:
+            messages.error(request, "something went wrong, try again")
+        return redirect("auctions:detail", pk)
 
 
 class BidDeleteView(LoginRequiredMixin, DeleteView):
