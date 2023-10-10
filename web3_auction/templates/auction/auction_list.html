@@ -4,96 +4,139 @@
 <div class="p-2">
   {% include "/home/isacco/Desktop/Web3Auction/web3_auction/web3_auction/templates/components/filter.html" %}
   <section class="bg-gray-100 rounded-lg relative pt-10">
-    <a href={% url "auctions:create" %} class="p-2 bg-purple-400 hover:bg-purple-500 rounded-md text-white font-semibold absolute top-3 left-3 mb-4">Add one</a>
+    <a href={% url "auctions:create" %} class="p-2 bg-purple-400 hover:bg-purple-500 rounded-md text-sm font-semibold tracking-wide text-white capitalize absolute top-3 left-3 mb-4">Create</a>
     <div class="flex flex-wrap gap-8 justify-center py-10">
       {% for auction in auctions %}
-      <!-- Auction Component -->
-      <article class="max-w-[360px] bg-white shadow-lg rounded-xl p-6 relative">
-        <div class="flex flex-col">
-          <div class="">
-            <div class="h-62 w-full mb-3">
-              <div class="absolute flex flex-col top-0 right-0">
-                <button
-                  class="transition ease-in duration-300 hover:text-red-500 text-gray-500 rounded-full w-8 h-8 text-center p-1"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                    />
-                  </svg>
-                </button>
-              </div>
-              <img src={{auction.image.url}} alt="auction image"
-              class="h-[200px] w-full object-contain rounded-2xl" />
-            </div>
-            <div class="flex-auto justify-evenly">
-              <div class="flex flex-wrap">
-                {% if auction.is_active %}
-                <div
-                  class="bg-green-400 text-white text-xs px-2 py-1 rounded-lg mb-2"
-                >
-                  OPEN
+        {% if auction.is_active %}
+          <!-- Auction Component -->
+          <article class="max-w-[360px] bg-white shadow-lg rounded-xl p-6 relative">
+            <div class="flex flex-col">
+              <div class="">
+                <div class="h-62 w-full mb-3">
+                  <div class="absolute flex flex-col top-0 right-0">
+                    <button class="transition ease-in duration-300 hover:text-red-500 text-gray-500 rounded-full w-8 h-8 text-center p-1">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-6 w-6"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                  <img src={{auction.image.url}} alt="auction image" class="h-[200px] w-full object-contain rounded-2xl" />
                 </div>
-                {% else %}
-                <div
-                  class="bg-red-400 text-white text-xs px-2 py-1 rounded-lg mb-2"
-                >
-                  CLOSED
+                <div class="flex-auto justify-evenly">
+                  <div class="flex flex-wrap">
+                    <div class="bg-green-400 text-white text-xs px-2 py-1 rounded-lg mb-2">
+                      OPEN
+                    </div>
+                    <div class="w-full min-w-0">
+                      <h2 class="text-xl mr-auto text-black font-bold truncate">
+                        {{ auction.title }}
+                      </h2>
+                    </div>
+                    {% if auction.highest_bid %}
+                    <div class="text-[15px] text-gray-500">
+                      Current high bid by
+                      <span class="text-black text-sm cursor-pointer"
+                        >@{{ auction.highest_bid.bidder_username }}</span
+                      >
+                    </div>
+                    {% else %}
+                    <div class="text-[15px] text-gray-500">
+                      Initial price:
+                    </div>
+                    {% endif %}
+                  </div>
+                  {% if auction.highest_bid %}
+                  <div class="text-xl text-black mt-1">
+                    ${{ auction.highest_bid.amount }}
+                  </div>
+                  {% else %}
+                  <div class="text-xl text-black mt-1">
+                    ${{ auction.current_price }}
+                  </div>
+                  {% endif %}
+                  <hr class="rounded mt-3 mb-3" />
+                  <div class="text-[15px] text-gray-500 mb-2">Auction ends date</div>
+                  <div class="flex space-x-2 text-sm font-medium justify-between items-center">
+                    <p
+                      class="inline-flex items-center text-sm font-medium mb-2 md:mb-0 b text-purple-500"
+                    >
+                      <span id="countdown-box-{{ auction.id }}">{{ auction.end_date }}</span>
+                    </p>
+                    <a href="{{ auction.get_absolute_url }}" class="transition ease-in duration-300 inline-flex items-center text-sm font-medium mb-2 md:mb-0 bg-purple-500 px-5 py-2 hover:shadow-lg tracking-wider text-white rounded-full hover:bg-purple-600">info</a>
+                  </div>
                 </div>
-                {% endif %}
-                <div class="w-full min-w-0">
-                  <h2
-                    class="text-lg mr-auto cursor-pointer text-black hover:text-purple-500 truncate"
-                  >
-                    {{ auction.title }}
-                  </h2>
-                </div>
-                {% if current_bid %}
-                <div class="text-sm text-gray-400">
-                  Current high bid by
-                  <span class="text-black text-sm cursor-pointer"
-                    >@{{ current_bid.bidder_username }}</span
-                  >
-                </div>
-                {% else %}
-                <div class="text-sm text-gray-400">
-                  Initial price:
-                </div>
-                {% endif %}
-              </div>
-              {% if current_bid %}
-              <div class="text-xl text-black font-semibold mt-1">
-                ${{ current_bid.amount }}
-              </div>
-              {% else %}
-              <div class="text-xl text-black font-semibold mt-1">
-                ${{ current_bid.amount }}
-              </div>
-              {% endif %}
-              <hr class="rounded mt-3 mb-3" />
-              <div class="text-md text-black mb-2">Auction ends date</div>
-              <div class="flex space-x-2 text-sm font-medium justify-between items-center">
-                <p
-                  class="inline-flex items-center text-sm font-medium mb-2 md:mb-0 b text-purple-500"
-                >
-                  <span id="countdown-box-{{ auction.id }}">{{ auction.end_date }}</span>
-                </p>
-                <a href="{{ auction.get_absolute_url }}" class="transition ease-in duration-300 inline-flex items-center text-sm font-medium mb-2 md:mb-0 bg-purple-500 px-5 py-2 hover:shadow-lg tracking-wider text-white rounded-full hover:bg-purple-600">info</a>
               </div>
             </div>
-          </div>
-        </div>
-      </article>
-      <!-- End Auction Component -->
+          </article>
+        {% else %}
+
+          <!-- Auction Component -->
+          <article class="max-w-[360px] bg-white shadow-lg rounded-xl p-6 relative">
+            <div class="flex flex-col">
+              <div class="">
+                <div class="h-62 w-full mb-3">
+                  <div class="absolute flex flex-col top-0 right-0">
+                    <button class="transition ease-in duration-300 hover:text-red-500 text-gray-500 rounded-full w-8 h-8 text-center p-1">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-6 w-6"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                  <img src={{auction.image.url}} alt="auction image" class="h-[200px] w-full object-contain rounded-2xl" />
+                </div>
+                <div class="flex-auto justify-evenly">
+                  <div class="flex flex-wrap">
+                    <div class="bg-red-400 text-white text-xs px-2 py-1 rounded-lg mb-2">
+                      CLOSED
+                    </div>
+                    <div class="w-full min-w-0">
+                      <h2 class="text-xl mr-auto text-black font-bold truncate">
+                        {{ auction.title }}
+                      </h2>
+                    </div>
+                    <div class="text-[15px] text-gray-500">
+                      Sold price:
+                    </div>
+                  </div>
+                  <div class="text-xl text-black mt-1">
+                    ${{ auction.end_price }}
+                  </div>
+                  <hr class="rounded mt-3 mb-3" />
+                  <div class="text-[15px] text-gray-500 mb-2">Winner:</div>
+                  <div class="flex space-x-2 text-sm font-medium justify-between items-center">
+                    <div class="flex justify-between items-center gap-2">
+                      <img src={{auction.winner.profile.profile_image.url}} alt="Winner Profile" class="w-6 h-6 rounded-full">
+                      <p>{{auction.winner}}</p>
+                    </div>
+                    <a href="{{ auction.get_absolute_url }}" class="transition ease-in duration-300 inline-flex items-center text-sm font-medium mb-2 md:mb-0 bg-purple-500 px-5 py-2 hover:shadow-lg tracking-wider text-white rounded-full hover:bg-purple-600">info</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+        {% endif %}
       {% empty %}
       <p>There are no auctions available, create your first <a href={% url "auctions:create" %} class="font-semibold underline">auction!</a></p>
       {% endfor %}

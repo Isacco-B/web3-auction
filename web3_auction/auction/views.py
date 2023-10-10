@@ -3,7 +3,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import get_user_model
 from django.shortcuts import redirect
-from django.views.generic import DetailView, ListView, CreateView, DeleteView, FormView
+from django.views.generic import DetailView, ListView, CreateView, DeleteView
 from .models import Auction, Bid
 from .forms import AuctionForm, BidForm
 from django.views.decorators.http import require_POST
@@ -25,16 +25,27 @@ class AuctionListView(LoginRequiredMixin, ListView):
     context_object_name = "auctions"
     template_name = "../templates/auction/auction_list.html"
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        status_filter = self.request.GET.get("status_filter")
+        if status_filter == "active":
+            queryset = queryset.filter(is_active=True)
+        elif status_filter == "inactive":
+            queryset = queryset.filter(is_active=False)
+
+        return queryset
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        auctions = Auction.objects.all()
 
-        for auction in auctions:
+        for auction in context["auctions"]:
             cache_key = f"auction_{auction.id}"
             bid_list = cache.get(cache_key)
             if bid_list:
-                current_bid = json.loads(bid_list)
-                context["current_bid"] = current_bid[-1]
+                bids = json.loads(bid_list)
+                highest_bid = bids[-1]
+                auction.highest_bid = highest_bid
 
         return context
 
