@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% load tailwind_filters %}
-{% block title%}Auction{%endblock title %}
+{% block title%}Update{%endblock title %}
 {% block content %}
 <section class="bg-gray-100 flex justify-center items-center flex-col rounded-lg sm:p-10 p-4 w-full">
   <div class="flex justify-center items-center p-[16px] sm:min-w-[380px] bg-gray-200 rounded-lg shadow-md mb-10">
     <h1 class="text-black font-epilogue font-bold sm:text-[25px] text-[18px] leading-[38px]">
-      Create Auction
+      Update
     </h1>
   </div>
   <form method="post" enctype="multipart/form-data">
@@ -16,8 +16,7 @@
     <div>
       {{ form.description|as_crispy_field }}
     </div>
-    <div class="flex flex-wrap gap-[40px] max-sm:block">
-      {{ form.current_price|as_crispy_field }}
+    <div>
       {{ form.end_date|as_crispy_field }}
     </div>
     {{ form.image|as_crispy_field }}

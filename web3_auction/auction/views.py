@@ -3,9 +3,10 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import get_user_model
 from django.shortcuts import redirect
-from django.views.generic import DetailView, ListView, CreateView, DeleteView
+from django.views.generic import DetailView, ListView, CreateView, DeleteView, UpdateView
 from .models import Auction, Bid
-from .forms import AuctionForm, BidForm
+from .forms import AuctionForm, AuctionUpdateForm, BidForm
+from .mixins import IsAuctionOwner
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -93,16 +94,35 @@ class AuctionCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
 auction_create_view = AuctionCreateView.as_view()
 
 
-class AuctionDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
+class AuctionUpdateView(LoginRequiredMixin, IsAuctionOwner, SuccessMessageMixin, UpdateView):
+    form_class = AuctionUpdateForm
+    template_name = "../templates/auction/auction_update.html"
+    success_message = "Auction successfully updated"
+
+    def form_valid(self, form):
+        form.save()
+        return super(AuctionUpdateView, self).form_valid(form)
+
+    def get_queryset(self):
+        return Auction.objects.filter(is_active=True)
+
+    def get_success_url(self):
+        return reverse_lazy("auctions:list")
+
+
+auction_update_view = AuctionUpdateView.as_view()
+
+
+class AuctionDeleteView(LoginRequiredMixin, IsAuctionOwner, SuccessMessageMixin, DeleteView):
     context_object_name = "auction"
     template_name = "../templates/auction/auction_delete.html"
     success_message = "Auction successfully deleted"
 
     def get_queryset(self):
-        return Auction.objects.filter(is_active=True, user=self.request.user.pk)
+        return Auction.objects.all()
 
     def get_success_url(self):
-        return reverse_lazy("home")
+        return reverse_lazy("auctions:list")
 
 
 auction_delete_view = AuctionDeleteView.as_view()

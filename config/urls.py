@@ -8,8 +8,8 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from rest_framework.authtoken.views import obtain_auth_token
 
 urlpatterns = [
-    path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
-    path("about/", TemplateView.as_view(template_name="pages/about.html"), name="about"),
+    path("", TemplateView.as_view(template_name="home.html"), name="home"),
+    # path("about/", TemplateView.as_view(template_name="pages/about.html"), name="about"),
     # Django Admin, use {% url 'admin:index' %}
     path(settings.ADMIN_URL, admin.site.urls),
     # User management
@@ -55,7 +55,7 @@ if settings.DEBUG:
         path("500/", default_views.server_error),
 
     ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    
+
     if "debug_toolbar" in settings.INSTALLED_APPS:
         import debug_toolbar
 

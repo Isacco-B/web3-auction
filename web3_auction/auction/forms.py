@@ -29,6 +29,13 @@ class AuctionForm(forms.ModelForm):
         }
 
 
+# Override AuctionForm for AuctionUpdateView
+class AuctionUpdateForm(AuctionForm):
+    class Meta(AuctionForm.Meta):
+        # Exclude the "current_price" field
+        exclude = ("current_price",)
+
+
 class BidForm(forms.Form):
     def __init__(self, *args, request=None, pk=None, **kwargs):
         self.request = request
