@@ -16,5 +16,6 @@ class AuctionSerializer(ModelSerializer):
             "start_date",
             "end_date",
             "winner",
-            "is_active"
+            "txId",
+            "status"
         )

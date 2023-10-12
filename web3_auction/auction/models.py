@@ -1,7 +1,7 @@
 from django.db import models
 from django.shortcuts import reverse
-from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
+from django.contrib.auth import get_user_model
 
 
 User = get_user_model()
@@ -10,18 +10,6 @@ User = get_user_model()
 class Auction(models.Model):
     """
     Model to represent an auction.
-
-    Attributes:
-    - owner: Auction owner (ForeignKey to User)
-    - title: Auction title (max length: 100)
-    - description: Auction description
-    - image: Image associated with the auction (optional)
-    - start_price: Starting price of the auction (positive integer, default: 0)
-    - end_price: Final price of the auction (positive integer, optional)
-    - start_date: Date and time when the auction starts (auto-generated on addition)
-    - end_date: Date and time when the auction ends (optional)
-    - winner: Auction winner (optional)
-    - is_active: Auction's active status (default: True)
     """
 
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="auctions")
@@ -41,7 +29,8 @@ class Auction(models.Model):
         null=True,
         blank=True,
     )
-    is_active = models.BooleanField(default=True)
+    txId = models.CharField(blank=True, null=True, max_length=100)
+    status = models.CharField(default="Active", max_length=10)
 
     class Meta:
         verbose_name = _("Auction")
@@ -54,16 +43,13 @@ class Auction(models.Model):
     def get_absolute_url(self):
         return reverse("auctions:detail", kwargs={"pk": self.pk})
 
+    def is_favorited_by_user(self, user):
+        return self.favorited_by.filter(id=user.profile.id).exists()
+
 
 class Bid(models.Model):
     """
     Model to represent a bid.
-
-    Attributes:
-    - auction: The auction associated with this bid (ForeignKey to Auction model)
-    - bidder: The user who placed the bid (ForeignKey to User)
-    - amount: The bid amount (positive integer, default: 0)
-    - bid_date: Date and time when the bid is made (auto-generated)
     """
 
     auction = models.ForeignKey(Auction, on_delete=models.CASCADE, related_name="bids")

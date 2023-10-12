@@ -53,4 +53,5 @@ class ProfileForm(ModelForm):
             "user",
             "followers",
             "following",
+            "favorite_auctions",
         )

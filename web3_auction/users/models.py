@@ -1,7 +1,7 @@
-from django.contrib.auth.models import AbstractUser
+from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-from django.db import models
+from django.contrib.auth.models import AbstractUser
 
 from web3_auction.users.managers import UserManager
 
@@ -68,6 +68,8 @@ class Profile(models.Model):
     # Follower
     followers = models.ManyToManyField(User, related_name="following", blank=True)
     following = models.ManyToManyField(User, related_name="followers", blank=True)
+    # Favorite
+    favorite_auctions = models.ManyToManyField('auction.Auction', related_name="favorited_by", blank=True)
 
     class Meta:
         verbose_name = _("Profile")

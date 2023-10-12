@@ -310,6 +310,10 @@ CELERY_BEAT_SCHEDULE = {
     'close_auctions': {
         'task': 'web3_auction.auction.tasks.close_auctions',
         'schedule': crontab(minute='*/1'),
+    },
+    'send_transaction': {
+        'task': 'web3_auction.auction.tasks.send_transaction',
+        'schedule': crontab(minute='*/1'),
     }
 }
 # django-allauth
@@ -340,7 +344,6 @@ SOCIALACCOUNT_FORMS = {"signup": "web3_auction.users.forms.UserSocialSignupForm"
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework.authentication.SessionAuthentication",
-        "rest_framework.authentication.TokenAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
@@ -355,7 +358,7 @@ SPECTACULAR_SETTINGS = {
     "TITLE": "Web3 Auction API",
     "DESCRIPTION": "Documentation of API endpoints of Web3 Auction",
     "VERSION": "1.0.0",
-    "SERVE_PERMISSIONS": ["rest_framework.permissions.IsAdminUser"],
+    "SERVE_PERMISSIONS": ["rest_framework.permissions.IsAuthenticated"],
 }
 # Your stuff...
 # ------------------------------------------------------------------------------

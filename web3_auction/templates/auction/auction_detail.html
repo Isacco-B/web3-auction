@@ -1,9 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load tailwind_filters %}
-{% block title %}Auction Info{% endblock title %}
+{% block title %}{{auction.title}}{% endblock title %}
 {% block content %}
-<div class="p-5 bg-gray-100">
+<div class="p-5 bg-gray-100 rounded-lg">
+  <input type=button value="Go Back" onClick="javascript:history.go(-1);" class="text-start hover:underline cursor-pointer">
   <div class="w-full flex md:flex-row flex-col mt-10 gap-[30px]">
     <div class="flex-1 flex-col bg-white rounded-lg">
       <img
@@ -12,14 +13,16 @@
         class="w-full h-[410px] object-contain rounded-xl"
       />
       <div class="relative w-full h-[5px] bg-[#3a3a43] mt-2">
-        {% if auction.is_active %}
+        {% if auction.status == "Active" %}
         <div class="absolute h-full bg-green-400 w-full"></div>
+        {% elif auction.status == "Inactive" %}
+        <div class="absolute h-full bg-orange-400 w-full"></div>
         {% else %}
         <div class="absolute h-full bg-red-400 w-full"></div>
         {% endif %}
       </div>
     </div>
-    {% if auction.is_active %}
+    {% if auction.status == "Active" %}
     <div class="flex md:w-[150px] w-full flex-wrap justify-between gap-[30px] max-sm:justify-center">
       <div class="flex flex-col items-center w-[150px] max-sm:w-[250px]">
         <h4 class="font-epilogue font-bold text-[30px text-black p-3 bg-white rounded-t-[10px] w-full text-center truncate" id="countdown-box-{{ auction.id }}" data-end="{{ auction.end_date|date:'c' }}">....</h4>
@@ -67,7 +70,7 @@
               <a href={% url "users:profile-detail" auction.owner.profile.id%}> @{{auction.owner.profile.username}}</a>
             </h4>
             <p class="mt-[4px] font-epilogue font-normal text-[12px] text-[#171718]">
-              {{auction.owner.auctions.all.count}} Active auctions
+              {{auction.owner.auctions.all.count}} auctions
             </p>
           </div>
         </div>
@@ -76,7 +79,7 @@
             Title
           </h4>
           <div class="mt-[20px]">
-            <p class="font-epilogue font-normal text-[16px] text-[#171718] leading-[26px] text-justify bg-white rounded-lg p-2">
+            <p class="font-epilogue font-normal text-[16px] text-[#171718] leading-[26px] text-justify bg-white rounded-lg p-2 truncate">
               {{auction.title}}
             </p>
           </div>
@@ -86,12 +89,12 @@
             Description
           </h4>
           <div class="mt-[20px]">
-            <p class="font-epilogue font-normal text-[16px] text-[#171718] leading-[26px] text-justify bg-white rounded-lg p-2">
+            <textarea cols="30" rows="10" class="font-epilogue font-normal text-[16px] text-[#171718] leading-[26px] text-justify bg-white rounded-lg border-none overflow-auto scrollbar-hide w-full" disabled>
               {{auction.description}}
-            </p>
+            </textarea>
           </div>
         </div>
-        {% if not auction.is_active %}
+        {% if auction.status == "Closed" %}
         <div class="flex justify-between items-center gap-4">
           <div class="w-1/2">
             <h4 class="font-epilogue font-semibold text-[18px] text-black uppercase mt-8">
@@ -119,14 +122,18 @@
             ETH transaction
           </h4>
           <div class="my-[20px]">
-            <p class="font-epilogue font-normal text-[16px] text-[#171718] leading-[26px] text-justify bg-white rounded-lg p-2 hover:underline">
-              <a href="https://isaccobertoli.com">https://isaccobertoli.com</a>
+            <p class="font-epilogue font-normal text-[16px] text-[#171718] leading-[26px] text-justify bg-white rounded-lg p-2 hover:underline truncate">
+              {% if auction.txId %}
+              <a href="https://sepolia.etherscan.io/tx/{{auction.txId}}" target="_blank">Id: {{auction.txId}}</a>
+              {% else %}
+              Loading...
+              {% endif %}
             </p>
           </div>
         </div>
         {% endif %}
 
-        {% if auction.is_active %}
+        {% if auction.status == "Active" %}
         <div>
           <h4 class="font-epilogue font-semibold text-[18px] text-black uppercase mt-8">
             Recent offers
@@ -135,8 +142,12 @@
             {% with sorted_bids=bid_list|dictsortreversed:"bid_date" %}
               {% for bidder in sorted_bids|slice:":5" %}
               <div class="flex justify-between items-center bg-gray-100 h-[40px] px-5 max-sm:px-1 rounded-[10px] my-2">
-                <p class="font-epilogue font-normal text-[16px] text-black leading-[26px] break-all truncate w-[240px] max-sm:w-[100px]">
-                  @{{bidder.bidder_username}}
+                <p class="font-epilogue font-normal text-[16px] text-black leading-[26px] break-all truncate w-[240px] max-sm:w-[100px] hover:underline">
+                  {% with user_id=bidder.user_id %}
+                    {% with profile=user.profile %}
+                    <a href={% url "users:profile-detail" profile.id %}>@{{bidder.bidder_username}}</a>
+                    {% endwith %}
+                  {% endwith %}
                 </p>
                 <p class="font-epilogue font-normal text-[16px] text-black leading-[26px] break-all">
                   {{bidder.amount}} $
@@ -154,7 +165,7 @@
         {% endif %}
       </div>
     </div>
-    {% if auction.is_active %}
+    {% if auction.status == "Active" %}
     <div class="flex-1">
       <h4 class="font-epilogue font-semibold text-[18px] text-black uppercase">
         Start Price
@@ -197,7 +208,7 @@
                 Support the project for no reward, just because it speaks to you
               </p>
             </div>
-            <button class="mt-4 p-2 bg-purple-500 ring-1 ring-purple-400 text-white font-semibold rounded-md w-full">
+            <button class="mt-4 p-2 bg-purple-500 ring-1 ring-purple-400 text-white font-semibold rounded-md w-full" id="bid-btn">
               Submit
             </button>
           </form>
@@ -213,7 +224,7 @@
 <script type="text/javascript">
     const countdownBox = document.getElementById('countdown-box-{{ auction.id }}');
     const endTimestamp = new Date(countdownBox.getAttribute('data-end')).getTime();
-    const bidForm = document.querySelector('.bid-form form');
+    const bidForm = document.getElementById('bid-btn');
 
     setInterval(() => {
         const now = new Date().getTime();
@@ -226,11 +237,11 @@
             const seconds = Math.floor((diffToEnd % (1000 * 60)) / 1000);
             countdownBox.innerHTML = `- ${days}d ${hours}h ${minutes}m ${seconds}s`;
 
-            bidForm.classList.remove('d-none');
+
         } else {
             countdownBox.innerHTML = 'Auction ended';
 
-            bidForm.classList.add('d-none');
+            bidForm.setAttribute('disabled', '');
         }
     }, 1000);
 </script>

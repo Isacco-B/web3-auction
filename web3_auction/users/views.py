@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from .models import Profile
+from web3_auction.auction.models import Auction
 from .forms import ProfileForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .mixins import IsProfileOwner, IsUserOwner
@@ -45,20 +46,6 @@ class ProfileDetailView(LoginRequiredMixin, DetailView):
     def get_queryset(self):
         return Profile.objects.all()
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        user = self.request.user
-
-        profile = self.get_object()
-        followers = profile.followers.all()
-        following = profile.following.all()
-
-        context["followers"] = followers
-        context["following"] = following
-        context["is_following"] = user in followers
-
-        return context
-
 
 class ProfileUpdateView(LoginRequiredMixin, IsProfileOwner, SuccessMessageMixin, UpdateView):
     form_class = ProfileForm
@@ -93,3 +80,15 @@ def follow_user(request, profile_id):
             profile.following.add(profile_to_follow.user)
 
     return redirect("users:profile-detail", pk=profile_id)
+
+
+@login_required
+def toggle_favorite_auction(request, auction_id):
+    auction = get_object_or_404(Auction, pk=auction_id)
+
+    if auction in request.user.profile.favorite_auctions.all():
+        request.user.profile.favorite_auctions.remove(auction)
+    else:
+        request.user.profile.favorite_auctions.add(auction)
+
+    return redirect("auctions:list")

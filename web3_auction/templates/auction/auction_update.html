@@ -3,6 +3,7 @@
 {% block title%}Update{%endblock title %}
 {% block content %}
 <section class="bg-gray-100 flex justify-center items-center flex-col rounded-lg sm:p-10 p-4 w-full">
+  <input type=button value="Go Back" onClick="javascript:history.go(-1);" class="text-start p-4 hover:underline cursor-pointer">
   <div class="flex justify-center items-center p-[16px] sm:min-w-[380px] bg-gray-200 rounded-lg shadow-md mb-10">
     <h1 class="text-black font-epilogue font-bold sm:text-[25px] text-[18px] leading-[38px]">
       Update
@@ -10,16 +11,7 @@
   </div>
   <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    <div>
-      {{ form.title|as_crispy_field }}
-    </div>
-    <div>
-      {{ form.description|as_crispy_field }}
-    </div>
-    <div>
-      {{ form.end_date|as_crispy_field }}
-    </div>
-    {{ form.image|as_crispy_field }}
+    {{form|crispy}}
     <div class="flex justify-center items-center mt-[40px]">
       <button
         type="submit"

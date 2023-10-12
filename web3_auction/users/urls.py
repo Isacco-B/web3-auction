@@ -7,6 +7,7 @@ from .views import (
     ProfileDetailView,
     profile_update_view,
     follow_user,
+    toggle_favorite_auction,
 )
 
 app_name = "users"
@@ -32,4 +33,5 @@ urlpatterns = [
         view=ProfileDetailView.as_view(template_name="../templates/profile/profile_following.html"),
         name="profile-following",
     ),
+    path('~profile/favorite/<int:auction_id>/', view=toggle_favorite_auction, name='toggle-favorite-auction'),
 ]

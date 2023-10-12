@@ -29,11 +29,27 @@ class AuctionForm(forms.ModelForm):
         }
 
 
-# Override AuctionForm for AuctionUpdateView
-class AuctionUpdateForm(AuctionForm):
-    class Meta(AuctionForm.Meta):
-        # Exclude the "current_price" field
-        exclude = ("current_price",)
+class AuctionUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Auction
+        fields = (
+            "title",
+            "description",
+            "end_date",
+        )
+        widgets = {
+            "title": forms.TextInput(attrs={"placeholder": "Your auction title"}),
+            "description": forms.Textarea(attrs={"placeholder": "Your auction description"}),
+            "end_date": forms.TextInput(attrs={"type": "datetime-local", "required": True}),
+        }
+
+
+class AuctionUpdateStatusForm(AuctionForm):
+    AUCTION_STATUS = (
+        ("Active", "Active"),
+        ("Inactive", "Inactive"),
+    )
+    status = forms.ChoiceField(choices=AUCTION_STATUS)
 
 
 class BidForm(forms.Form):
@@ -64,7 +80,7 @@ class BidForm(forms.Form):
         if auction.owner == self.request.user:
             raise ValidationError("Error, you cannot bid in the auctions you created")
 
-        if not auction.is_active:
+        if auction.status == "Close":
             raise ValidationError("Error, the auction has ended")
 
         if amount <= auction.current_price:

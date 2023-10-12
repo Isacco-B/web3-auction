@@ -6,7 +6,7 @@
     <div class="bg-gray-100 p-4 max-w-[500px] m-auto rounded-lg">
         <div class="max-w-lg mx-auto p-5">
             <div class="py-5 border-b border-gray-200">
-                <a class="hover:underline text-sm font-semibold" href="{% url 'users:profile-detail' user.profile.pk %}">Go back</a>
+                <input type=button value="Go Back" onClick="javascript:history.go(-1);" class="text-start hover:underline cursor-pointer">
             </div>
             <h1 class="text-xl text-gray-800">Are you sure you want to delete the account?</h1>
             <form method="post" class="mt-5">

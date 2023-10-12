@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from django.shortcuts import redirect
 from django.views.generic import DetailView, ListView, CreateView, DeleteView, UpdateView
 from .models import Auction, Bid
-from .forms import AuctionForm, AuctionUpdateForm, BidForm
+from .forms import AuctionForm, AuctionUpdateForm, AuctionUpdateStatusForm, BidForm
 from .mixins import IsAuctionOwner
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
@@ -31,9 +31,11 @@ class AuctionListView(LoginRequiredMixin, ListView):
 
         status_filter = self.request.GET.get("status_filter")
         if status_filter == "active":
-            queryset = queryset.filter(is_active=True)
+            queryset = queryset.filter(status="Active")
         elif status_filter == "inactive":
-            queryset = queryset.filter(is_active=False)
+            queryset = queryset.filter(status="Inactive")
+        elif status_filter == "close":
+            queryset = queryset.filter(status="Closed")
 
         return queryset
 
@@ -81,7 +83,7 @@ class AuctionCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     success_message = "Auction successfully created"
 
     def form_valid(self, form):
-        user = User.objects.get(email=self.request.user.email)
+        user = User.objects.get(id=self.request.user.id)
         auction = form.save(commit=False)
         auction.owner = user
         auction.save()
@@ -95,16 +97,30 @@ auction_create_view = AuctionCreateView.as_view()
 
 
 class AuctionUpdateView(LoginRequiredMixin, IsAuctionOwner, SuccessMessageMixin, UpdateView):
-    form_class = AuctionUpdateForm
+    model = Auction
     template_name = "../templates/auction/auction_update.html"
     success_message = "Auction successfully updated"
 
+    def get_form_class(self):
+        if self.object.status == "Inactive":
+            return AuctionUpdateStatusForm
+        else:
+            return AuctionUpdateForm
+
     def form_valid(self, form):
-        form.save()
-        return super(AuctionUpdateView, self).form_valid(form)
+        if self.object.status == "Closed":
+            messages.error(self.request, "You cannot update this auction.")
+            return redirect("auctions:list")
+
+        if self.get_form_class() == AuctionUpdateStatusForm:
+            auction = form.save(commit=False)
+            status = form.cleaned_data["status"]
+            auction.status = status
+            auction.save()
+        return super().form_valid(form)
 
     def get_queryset(self):
-        return Auction.objects.filter(is_active=True)
+        return Auction.objects.all()
 
     def get_success_url(self):
         return reverse_lazy("auctions:list")

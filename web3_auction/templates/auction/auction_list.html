@@ -2,14 +2,14 @@
 {% block title %}Auction{% endblock title %}
 {% block content %}
 <div class="p-2">
-  {% include "/home/isacco/Desktop/Web3Auction/web3_auction/web3_auction/templates/components/filter.html" %}
+  {% include "components/filter.html" %}
   <section class="bg-gray-100 rounded-lg relative pt-10">
     <a href={% url "auctions:create" %} class="p-2 bg-purple-400 hover:bg-purple-500 rounded-md text-sm font-semibold tracking-wide text-white capitalize absolute top-3 left-3 mb-4">Create</a>
     <div class="flex flex-wrap gap-8 justify-center py-10">
       {% for auction in auctions %}
-        {% if auction.is_active %}
+        {% if auction.status == "Active" or auction.status == "Inactive"%}
           <!-- Auction Component -->
-          <article class="max-w-[360px] bg-white shadow-lg rounded-xl p-6 relative">
+          <article class="w-[360px] bg-white shadow-lg rounded-xl p-6 relative">
             <div class="flex flex-col">
               <div class="">
                 <div class="h-62 w-full mb-3">
@@ -70,31 +70,56 @@
                       </a>
                     </div>
                     {% else %}
-                    <a href="" class="transition ease-in duration-300 hover:text-red-500 text-gray-500 rounded-full w-8 h-8 text-center p-1">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-6 w-6"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                        />
-                      </svg>
-                    </a>
+                      {% if auction in request.user.profile.favorite_auctions.all %}
+                      <a href={% url "users:toggle-favorite-auction" auction.id %} class="transition ease-in duration-300 hover:text-gray-500 text-red-500 rounded-full w-8 h-8 text-center p-1">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          class="h-6 w-6"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                          />
+                        </svg>
+                      </a>
+                      {% else %}
+                      <a href={% url "users:toggle-favorite-auction" auction.id %} class="transition ease-in duration-300 hover:text-red-500 text-gray-500 rounded-full w-8 h-8 text-center p-1">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          class="h-6 w-6"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                          />
+                        </svg>
+                      </a>
+                      {% endif %}
                     {% endif %}
                   </div>
                   <img src={{auction.image.url}} alt="auction image" class="h-[200px] w-full object-contain rounded-2xl" />
                 </div>
                 <div class="flex-auto justify-evenly">
                   <div class="flex flex-wrap">
+                    {% if auction.status == "Active" %}
                     <div class="bg-green-400 text-white text-xs px-2 py-1 rounded-lg mb-2">
                       OPEN
                     </div>
+                    {% else %}
+                    <div class="bg-orange-400 text-white text-xs px-2 py-1 rounded-lg mb-2">
+                      INACTIVE
+                    </div>
+                    {% endif %}
                     <div class="w-full min-w-0">
                       <h2 class="text-xl mr-auto text-black font-bold truncate">
                         {{ auction.title }}
@@ -139,27 +164,77 @@
         {% else %}
 
           <!-- Auction Component -->
-          <article class="max-w-[360px] bg-white shadow-lg rounded-xl p-6 relative">
+          <article class="w-[360px] bg-white shadow-lg rounded-xl p-6 relative">
             <div class="flex flex-col">
               <div class="">
                 <div class="h-62 w-full mb-3">
                   <div class="absolute flex flex-col top-0 right-0">
-                    <button class="transition ease-in duration-300 hover:text-red-500 text-gray-500 rounded-full w-8 h-8 text-center p-1">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-6 w-6"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                        />
-                      </svg>
-                    </button>
+                    {% if request.user == auction.owner %}
+                    <div class="flex items-center h-8 ">
+                      <a href={% url "auctions:delete" auction.id%} class="transition-all duration-100 w-7 h-7 p-1 hover:w-8 hover:h-8 dura">
+                        <svg
+                          viewBox="0 0 1024 1024"
+                          fill="#000000"
+                          class="icon"
+                          version="1.1"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                          <g
+                            id="SVGRepo_tracerCarrier"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          ></g>
+                          <g id="SVGRepo_iconCarrier">
+                            <path
+                              d="M32 241.6c-11.2 0-20-8.8-20-20s8.8-20 20-20l940 1.6c11.2 0 20 8.8 20 20s-8.8 20-20 20L32 241.6zM186.4 282.4c0-11.2 8.8-20 20-20s20 8.8 20 20v688.8l585.6-6.4V289.6c0-11.2 8.8-20 20-20s20 8.8 20 20v716.8l-666.4 7.2V282.4z"
+                              fill=""
+                            ></path>
+                            <path
+                              d="M682.4 867.2c-11.2 0-20-8.8-20-20V372c0-11.2 8.8-20 20-20s20 8.8 20 20v475.2c0.8 11.2-8.8 20-20 20zM367.2 867.2c-11.2 0-20-8.8-20-20V372c0-11.2 8.8-20 20-20s20 8.8 20 20v475.2c0.8 11.2-8.8 20-20 20zM524.8 867.2c-11.2 0-20-8.8-20-20V372c0-11.2 8.8-20 20-20s20 8.8 20 20v475.2c0.8 11.2-8.8 20-20 20zM655.2 213.6v-48.8c0-17.6-14.4-32-32-32H418.4c-18.4 0-32 14.4-32 32.8V208h-40v-42.4c0-40 32.8-72.8 72.8-72.8H624c40 0 72.8 32.8 72.8 72.8v48.8h-41.6z"
+                              fill=""
+                            ></path>
+                          </g>
+                        </svg>
+                      </a>
+                    </div>
+                    {% else %}
+                      {% if auction in request.user.profile.favorite_auctions.all %}
+                      <a href={% url "users:toggle-favorite-auction" auction.id %} class="transition ease-in duration-300 hover:text-gray-500 text-red-500 rounded-full w-8 h-8 text-center p-1">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          class="h-6 w-6"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                          />
+                        </svg>
+                      </a>
+                      {% else %}
+                      <a href={% url "users:toggle-favorite-auction" auction.id %} class="transition ease-in duration-300 hover:text-red-500 text-gray-500 rounded-full w-8 h-8 text-center p-1">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          class="h-6 w-6"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                          />
+                        </svg>
+                      </a>
+                      {% endif %}
+                    {% endif %}
                   </div>
                   <img src={{auction.image.url}} alt="auction image" class="h-[200px] w-full object-contain rounded-2xl" />
                 </div>
