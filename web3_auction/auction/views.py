@@ -147,17 +147,6 @@ auction_delete_view = AuctionDeleteView.as_view()
 # -------Bid View-------
 
 
-class BidListView(LoginRequiredMixin, ListView):
-    context_object_name = "bids"
-    template_name = "../templates/bid/bid_list.html"
-
-    def get_queryset(self):
-        return Auction.objects.filter(bidder=self.request.user.pk)
-
-
-bid_list_view = BidListView.as_view()
-
-
 @require_POST
 @login_required
 def save_form_data_to_cache(request, pk):
@@ -205,18 +194,3 @@ def save_form_data_to_cache(request, pk):
         else:
             messages.error(request, "something went wrong, try again")
         return redirect("auctions:detail", pk)
-
-
-class BidDeleteView(LoginRequiredMixin, DeleteView):
-    context_object_name = "bid"
-    template_name = "../templates/bid/bid_delete.html"
-    success_message = "Bid successfully deleted"
-
-    def get_queryset(self):
-        return Bid.objects.filter(user=self.request.user.pk)
-
-    def get_success_url(self):
-        return reverse_lazy("landing-page")
-
-
-bid_delete_view = BidDeleteView.as_view()

@@ -12,6 +12,7 @@ from .views import (
 
 
 app_name = "auctions"
+
 urlpatterns = [
     path("~create/", view=auction_create_view, name="create"),
     path("~list/", view=auction_list_view, name="list"),

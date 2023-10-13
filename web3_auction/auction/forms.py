@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from django.core.cache import cache
 from .models import Auction
+from django.utils import timezone
 import json
 
 
@@ -28,6 +29,15 @@ class AuctionForm(forms.ModelForm):
             "end_date": forms.TextInput(attrs={"type": "datetime-local", "required": True}),
         }
 
+    def clean_end_date(self):
+        current_datetime = timezone.now()
+        end_date = self.cleaned_data.get("end_date")
+
+        if end_date <= current_datetime:
+            raise ValidationError("Error, invalid date, please enter a valid date!")
+
+        return end_date
+
 
 class AuctionUpdateForm(forms.ModelForm):
     class Meta:
@@ -42,6 +52,15 @@ class AuctionUpdateForm(forms.ModelForm):
             "description": forms.Textarea(attrs={"placeholder": "Your auction description"}),
             "end_date": forms.TextInput(attrs={"type": "datetime-local", "required": True}),
         }
+
+    def clean_end_date(self):
+        current_datetime = timezone.now()
+        end_date = self.cleaned_data.get("end_date")
+
+        if end_date <= current_datetime:
+            raise ValidationError("Error, invalid date, please enter a valid date!")
+
+        return end_date
 
 
 class AuctionUpdateStatusForm(AuctionForm):
@@ -78,7 +97,7 @@ class BidForm(forms.Form):
                 raise ValidationError("Error, you have to offer more than the last offer")
 
         if auction.owner == self.request.user:
-            raise ValidationError("Error, you cannot bid in the auctions you created")
+            raise ValidationError("Error, you cannot bid on auctions you own")
 
         if auction.status == "Close":
             raise ValidationError("Error, the auction has ended")

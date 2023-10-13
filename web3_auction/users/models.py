@@ -69,7 +69,7 @@ class Profile(models.Model):
     followers = models.ManyToManyField(User, related_name="following", blank=True)
     following = models.ManyToManyField(User, related_name="followers", blank=True)
     # Favorite
-    favorite_auctions = models.ManyToManyField('auction.Auction', related_name="favorited_by", blank=True)
+    favorite_auctions = models.ManyToManyField("auction.Auction", related_name="favorited_by", blank=True)
 
     class Meta:
         verbose_name = _("Profile")

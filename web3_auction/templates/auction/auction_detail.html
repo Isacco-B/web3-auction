@@ -190,22 +190,16 @@
         </p>
       </div>
       <h4 class="font-epilogue font-semibold text-[18px] text-black uppercase">
-        Fund
+        make an offer
       </h4>
       <div class="mt-[20px] flex flex-col p-4 bg-white rounded-[10px]">
-        <p class="font-epilogue font-medium text-[20px] leading-[30px] text-center text-[#808191]">
-          Found the campaing
-        </p>
         <div class="mt-[30px]">
           <form action="{% url 'auctions:bid-create' auction.id %}" method="post">
             {% csrf_token %}
             {{ bid_form|crispy }}
             <div class="mt-[20px] p-4 bg-[#e3e3e4] rounded-[10px]">
-              <h4 class="font-epilogue font-semibold text-[14px] leading-[22px] text-black">
-                Back it because you believe in it.
-              </h4>
               <p class="my-[20px] font-epilogue font-normal leading-[22px] text-[#808191]">
-                Support the project for no reward, just because it speaks to you
+                Make a positive impact on the world
               </p>
             </div>
             <button class="mt-4 p-2 bg-purple-500 ring-1 ring-purple-400 text-white font-semibold rounded-md w-full" id="bid-btn">
