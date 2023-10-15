@@ -1,17 +1,122 @@
-# Web3 Auction
+# Final Start2Impact BlockChain Project
 
-Final project for Start2Impact University
+- A platform to manage the sale of electric vehicles through a charity auction for a micromobility company.
+- License: MIT
 
-[![Built with Cookiecutter Django](https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg?logo=cookiecutter)](https://github.com/cookiecutter/cookiecutter-django/)
-[![Black code style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
+how does it work?
+Any registered user can create an auction and bid on other active auctions. Once the time expires, if there are bids, the auction is closed and a transaction is sent to the Sepolia testnet containing the details of the auction. If there are no bids when the time runs out, the auction is marked as inactive and the owner can edit and publish it again or delete it.
+<br>
+The application also includes a follower and favorites management system
 
-License: MIT
+## Demo
 
-## Settings
+Link: https://demo6.isaccobertoli.com
 
-Moved to [settings](http://cookiecutter-django.readthedocs.io/en/latest/settings.html).
 
-## Basic Commands
+## Tech Stack
+
+**Client:** TailwindCSS, javascript.
+
+**Server:** django, rest framework, clery.
+
+**Database:** postgres, redis.
+
+## Screenshots
+
+- Home
+
+<p align="center">
+    <img width="80%" src="./screenshot/Home.png">
+</p>
+
+- Auction List
+
+<p align="center">
+    <img width="80%" src="./screenshot/AuctionList.png">
+</p>
+
+- Auction Detail
+
+<p align="center">
+    <img width="80%" src="./screenshot/AuctionDetail.png">
+    <img width="80%" src="./screenshot/AuctionForm.png">
+</p>
+
+- ETH Transaction
+
+<p align="center">
+    <img width="80%" src="./screenshot/ETH.png">
+</p>
+
+- Profile
+
+<p align="center">
+    <img width="80%" src="./screenshot/Profile.png">
+</p>
+
+- Profile Follow
+
+<p align="center">
+    <img width="80%" src="./screenshot/Follow.png">
+</p>
+
+- Profile Favourite
+
+<p align="center">
+    <img width="80%" src="./screenshot/Favourite.png">
+</p>
+
+- API Page
+
+<p align="center">
+    <img width="80%" src="./screenshot/ApiPage.png">
+</p>
+
+## Getting Up and Running Locally
+
+
+### Clone Repo
+
+```bash
+git@github.com:Isacco-B/Web3Auction_Start2Impact.git
+```
+
+
+### Create .env File
+
+```bash
+DATABASE_URL=postgres://postgres:<password>@127.0.0.1:5432/<db_name>
+CELERY_BROKER_URL=redis://localhost:6379/0
+
+WALLET_ADDRESS=0x00000000000000000000000000000000000000000
+PRIVATE_KEY=0000000000000000000000000000000000000000000000000
+PROVIDER=https://eth-sepolia.g.alchemy.com/v2/<api_key>
+```
+
+
+### Create virtual_env
+
+```bash
+python3.11 -m venv venv
+source venv/bin/activate
+export DJANGO_READ_DOT_ENV_FILE=True
+```
+
+
+### Create postgresdb
+
+```bash
+createdb --username=postgres <project_slug>
+```
+
+
+### Makemigrations / Migrate
+
+```bash
+python manage.py makemigrations
+python manage.py migrate
+```
+
 
 ### Setting Up Your Users
 
@@ -23,27 +128,13 @@ Moved to [settings](http://cookiecutter-django.readthedocs.io/en/latest/settings
 
 For convenience, you can keep your normal user logged in on Chrome and your superuser logged in on Firefox (or similar), so that you can see how the site behaves for both kinds of users.
 
-### Type checks
 
-Running type checks with mypy:
+### Runserver
 
-    $ mypy web3_auction
+```bash
+python manage.py runserver
+```
 
-### Test coverage
-
-To run the tests, check your test coverage, and generate an HTML coverage report:
-
-    $ coverage run -m pytest
-    $ coverage html
-    $ open htmlcov/index.html
-
-#### Running tests with pytest
-
-    $ pytest
-
-### Live reloading and Sass CSS compilation
-
-Moved to [Live reloading and SASS compilation](https://cookiecutter-django.readthedocs.io/en/latest/developing-locally.html#sass-compilation-live-reloading).
 
 ### Celery
 
@@ -72,6 +163,5 @@ cd web3_auction
 celery -A config.celery_app worker -B -l info
 ```
 
-## Deployment
-
-The following details how to deploy this application.
+## 🔗 Links
+[![linkedin](https://img.shields.io/badge/linkedin-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/isacco-bertoli-10aa16252/)
