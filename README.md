@@ -99,6 +99,7 @@ PROVIDER=https://eth-sepolia.g.alchemy.com/v2/<api_key>
 ```bash
 python3.11 -m venv venv
 source venv/bin/activate
+pip install -r requirements/local.txt 
 export DJANGO_READ_DOT_ENV_FILE=True
 ```
 
