@@ -89,7 +89,7 @@
             Description
           </h4>
           <div class="mt-[20px]">
-            <textarea cols="30" rows="10" class="font-epilogue font-normal text-[16px] text-[#171718] leading-[26px] text-justify bg-white rounded-lg border-none overflow-auto scrollbar-hide w-full" disabled>
+            <textarea cols="30" rows="10" class="font-epilogue font-normal text-[16px] text-[#171718] whitespace-pre-line leading-[26px] bg-white rounded-lg border-none overflow-auto scrollbar-hide w-full" disabled>
               {{auction.description}}
             </textarea>
           </div>
@@ -142,7 +142,7 @@
             {% with sorted_bids=bid_list|dictsortreversed:"bid_date" %}
               {% for bidder in sorted_bids|slice:":5" %}
               <div class="flex justify-between items-center bg-gray-100 h-[40px] px-5 max-sm:px-1 rounded-[10px] my-2">
-                <p class="font-epilogue font-normal text-[16px] text-black leading-[26px] break-all truncate w-[240px] max-sm:w-[100px] hover:underline">
+                <p class="font-epilogue font-normal text-[16px] text-black leading-[26px] break-all truncate sm:w-[150px] hover:underline">
                   {% with user_id=bidder.user_id %}
                     {% with profile=user.profile %}
                     <a href={% url "users:profile-detail" profile.id %}>@{{bidder.bidder_username}}</a>
@@ -153,7 +153,7 @@
                   {{bidder.amount}} $
                 </p>
                 <p class="font-epilogue font-normal text-[16px] text-black leading-[26px] break-all">
-                  <div>{{ bidder.bid_date }}</div>
+                  {{ bidder.bid_date }}
                 </p>
               </div>
               {% empty %}
