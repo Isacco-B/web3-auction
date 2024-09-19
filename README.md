@@ -1,6 +1,6 @@
 # Final Start2Impact BlockChain Project
 
-- A platform to manage the sale of electric vehicles through a charity auction for a micromobility company.
+- A platform for managing the sale of electric vehicles through a charity auction for a micromobility company. Users can register and place bids, with completed transactions recorded on the blockchain. Built with Django.
 - License: MIT
 
 how does it work?
